@@ -1,0 +1,46 @@
+import { useEffect, useRef, useState } from "react";
+import "./App.css";
+import Editor, { StateSetter } from "./Editor.tsx";
+import { open } from '@tauri-apps/plugin-dialog';
+import { shortcutHandler } from "./hotkeys.ts";
+import { register } from "./functions.ts";
+
+type AppState = {
+    dir: string | undefined,  setDir: StateSetter<AppState['dir']>
+}
+export default function App() {
+  const [dir, setDirO] = useState<AppState["dir"]>();
+  const setDir = (x) => {
+    console.log(x);
+    setDirO(x);
+  } 
+  // console.log(dir);
+  const appState = useRef<AppState>({} as AppState); // we set it every refresh anyways
+  appState.current = {
+      dir, setDir,
+  };
+
+  useEffect(() => {
+    document.addEventListener('keydown', shortcutHandler);
+    register("openDirectory", () => openDir(appState.current));
+
+    return () => document.removeEventListener('keydown', shortcutHandler);
+  }, []);
+
+  return (
+    <div className="dark bg-c1-fill w-full h-full">
+      <main className="px-10 w-full h-full">
+        {dir && 
+          <Editor dir={dir}/>
+        }
+      </main>
+    </div>
+  );
+}
+
+function openDir(state: AppState) {
+  const { setDir } = state; 
+
+  open({ multiple: false, directory: true, })
+  .then((x: string | null) => x && setDir(x));
+}

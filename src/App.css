@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+	--primary: 0, 0%, 0%;
+	--primary-fill: 0, 0%, 100%;
+	--primary-accent: 0, 0%, 33%;
+
+	--secondary: 0, 0%, 75%;
+	--secondary-fill: 224 43% 22%;
+	--secondary-accent: 229, 29%, 47%;
+	
+	--tertiary: 0, 0%, 75%;
+	--tertiary-fill: 224 43% 22%;
+	--tertiary-accent: 229, 29%, 47%;
+}
+
+.dark {
+	--important: 0 0% 100%;
+	--important-accent: 238.23 48% 40%;
+
+	--primary: 240, 4.9%, 83.9%;
+	--primary-fill: 220.5 45.7% 15.9%;
+	--primary-accent: 229.2 100% 68.4%;
+
+	--secondary: 0 0 68;
+	--secondary-fill: 0 0% 2%;
+	--secondary-accent: 199 81.3 42;
+	
+	--tertiary: 0 0 53;
+	--tertiary-fill: 223.3 12.7% 27.8%;
+	--tertiary-accent: 229, 29%, 47%;
+}
+* {
+	scrollbar-width: 4px;
+	scrollbar-color: hsl(var(--tertiary)) hsl(var(--tertiary-fill));
+}
+*::-webkit-scrollbar {
+	@apply w-3 m-1;
+}
+*::-webkit-scrollbar-thumb {
+	@apply bg-c3;
+}
+*::-webkit-scrollbar-track {
+	@apply bg-c3-accent;
+}
+
+* {
+	@apply box-border;
+}
+html, body, #root {
+	@apply h-full w-full;
+}
+
+summary {
+	@apply cursor-pointer relative
+}
+summary::before {
+	@apply content-[''] border-c3 absolute top-0 bottom-0 left-2 w-2 h-2 my-auto border-b border-r -rotate-45 transition-transform ease-in-out duration-200
+}
+details[open] summary::before {
+	@apply rotate-45
+}
+summary::marker, summary::-webkit-details-marker {
+	@apply hidden
+}

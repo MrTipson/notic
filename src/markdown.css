@@ -1,0 +1,37 @@
+.md h1 { @apply text-c0 mx-4 mt-10 text-4xl font-extrabold border-b border-b-c3 }
+.md h2 { @apply mx-4 mt-10 text-2xl font-bold border-b border-b-c3 w-fit }
+.md h3 { @apply text-c1 mx-4 mt-8 text-lg font-semibold underline underline-offset-2}
+.md h4, .md h5, .md h6 { @apply text-c1 mx-4 mt-3 font-semibold }
+
+.md p {	@apply mx-4 my-2 text-c2 }
+.md a {	@apply text-c2-accent underline underline-offset-4 }
+
+.md blockquote { @apply border-l-c2 border-l-2 px-2 py-1 bg-c2-fill/50 my-4 }
+
+.md pre { @apply p-2 w-full bg-c2-fill/50}
+.md code { @apply bg-c2-fill/50 px-1 py-0.5 }
+.md pre > code { @apply bg-transparent p-0 }
+
+.md ul { @apply list-disc }
+.md ol { @apply list-decimal }
+.md ul, .md ol { @apply ml-4 text-c2 list-inside }
+.md ul.contains-task-list { @apply list-none }
+.md .footnotes > ol { @apply list-outside }
+.md .footnotes { @apply border-t mt-8}
+
+.md thead { @apply border-b border-b-c1 text-left}
+.md td,.md th { @apply px-3 py-1}
+.md td { @apply text-c2 }
+.md tbody > tr { @apply border-b border-b-c3 }
+
+.md figure { @apply flex flex-col items-center my-8}
+.md figure p { @apply m-0 }
+.md figcaption { @apply mt-2}
+
+.md details { @apply text-c3 border-l pl-2 }
+.md summary { @apply cursor-pointer relative }
+.md summary::before { @apply content-[''] border-c3 absolute top-0 bottom-0 -left-8 w-2 h-2 my-auto border-b border-r -rotate-45 transition-transform duration-200 }
+.md details[open] summary::before { @apply rotate-45 }
+.md summary::marker { @apply content-none }
+
+.md hr { @apply my-8 }
