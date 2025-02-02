@@ -4,6 +4,7 @@ import Editor, { StateSetter } from "./Editor.tsx";
 import { open } from '@tauri-apps/plugin-dialog';
 import { shortcutHandler } from "./hotkeys.ts";
 import { register } from "./functions.ts";
+import { wrap } from "./hooks/wrappedState.ts";
 
 type AppState = {
     dir: string | undefined,  setDir: StateSetter<AppState['dir']>
@@ -15,10 +16,7 @@ export default function App() {
     setDirO(x);
   } 
   // console.log(dir);
-  const appState = useRef<AppState>({} as AppState); // we set it every refresh anyways
-  appState.current = {
-      dir, setDir,
-  };
+  const appState = wrap<AppState>({ dir, setDir });
 
   useEffect(() => {
     document.addEventListener('keydown', shortcutHandler);

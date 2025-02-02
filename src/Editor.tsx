@@ -11,6 +11,7 @@ import { readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';
 import { register } from './functions';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import Sidebar from './Sidebar';
+import { wrap } from './hooks/wrappedState.ts';
 
 const options = {
     ...runtime,
@@ -42,8 +43,7 @@ export default function Editor(props: EditorProps) {
     const [error, setError] = useState('');
     const [mode, setMode] = useState<mode>('both');
     
-    const editorState = useRef<EditorState>({} as EditorState); // we set it every refresh anyways
-    editorState.current = {
+    const editorState = wrap<EditorState>({
         dir,
         filename, setFilename,
         unsaved, setUnsaved,
@@ -51,7 +51,7 @@ export default function Editor(props: EditorProps) {
         rendered, setRendered,
         error, setError,
         mode, setMode,
-    };
+    });
 
     useEffect(() => setFilename(undefined), [dir]);
 
