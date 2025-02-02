@@ -53,7 +53,13 @@ export default function Editor(props: EditorProps) {
         mode, setMode,
     });
 
-    useEffect(() => setFilename(undefined), [dir]);
+    useEffect(() => {
+        setFilename(undefined);
+        setUnsaved(false);
+        setContent('');
+        setRendered('');
+        setError('');
+    }, [dir]);
 
     useEffect(() => {
         register('saveFile', () => saveFile(editorState.current));

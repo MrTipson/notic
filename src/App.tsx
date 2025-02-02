@@ -10,11 +10,7 @@ type AppState = {
     dir: string | undefined,  setDir: StateSetter<AppState['dir']>
 }
 export default function App() {
-  const [dir, setDirO] = useState<AppState["dir"]>();
-  const setDir = (x) => {
-    console.log(x);
-    setDirO(x);
-  } 
+  const [dir, setDir] = useState<AppState["dir"]>();
   // console.log(dir);
   const appState = wrap<AppState>({ dir, setDir });
 
