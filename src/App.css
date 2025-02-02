@@ -57,7 +57,7 @@ summary {
 	@apply cursor-pointer relative
 }
 summary::before {
-	@apply content-[''] border-c3 absolute top-0 bottom-0 left-2 w-2 h-2 my-auto border-b border-r -rotate-45 transition-transform ease-in-out duration-200
+	@apply content-[''] border-c3 absolute top-0 bottom-0 -left-4 w-2 h-2 my-auto border-b border-r -rotate-45 transition-transform ease-in-out duration-200
 }
 details[open] summary::before {
 	@apply rotate-45

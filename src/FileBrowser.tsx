@@ -1,5 +1,5 @@
 import { readDir } from '@tauri-apps/plugin-fs';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { invoke } from './functions';
 
 interface FileBrowserProps {
@@ -40,13 +40,13 @@ function renderChildren(children: FileEntry[], refresh: ()=>void) {
     ).map(f => {
         if (f.children) {
             return (
-                <details key={f.path}>
-                    <summary className='hover:bg-c2-fill text-c1 pl-6' onClick={() => {f.isExpanded = !f.isExpanded; refresh();}}>{f.name}</summary>
-                    {f.isExpanded && renderChildren(f.children(), refresh)}
+                <details key={f.path} className='pl-6'>
+                    <summary className='hover:text-c0' onClick={() => {f.isExpanded = !f.isExpanded; refresh();}}>{f.name}</summary>
+                    <div>{f.isExpanded && renderChildren(f.children(), refresh)}</div>
                 </details>
             );
         } else {
-            return <div key={f.path} className='bg-orange-200' onClick={() => invoke('openFile', f.path)}>{f.name}</div>    
+            return <div key={f.path} className='pl-6 hover:text-c0 cursor-pointer' onClick={() => invoke('openFile', f.path)}>{f.name}</div>    
         }
     });
 }
@@ -59,6 +59,8 @@ export default function FileBrowser(props: FileBrowserProps) {
     const files = useMemo(() => readFolder(dir, '', refresh), [dir]);
 
     return (
-        files.children ? renderChildren(files.children(), refresh) : "internal error"
+        <div className='text-c1 select-none'>
+            {files.children ? renderChildren(files.children(), refresh) : "internal error"}
+        </div>
     );
 }
