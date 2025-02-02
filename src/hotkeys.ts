@@ -8,7 +8,7 @@ const defaultShortcuts = {
 }
 
 // TODO: read config file
-const shortcuts = defaultShortcuts;
+export const shortcuts = Object.freeze(defaultShortcuts);
 
 const CTRL = 8;
 const SHIFT = 4;

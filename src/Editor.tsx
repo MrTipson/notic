@@ -118,10 +118,12 @@ function saveFileAs(state: EditorState) {
         filters: [ { name: 'Markdown', extensions: ['mdx', 'md'] } ],
         defaultPath: dir,
     })
-    .then(path => path === null ? null : writeTextFile(path, content, {}))
-    .then(_x => {
-        console.log("file saved");
-        setUnsaved(false);
+    .then(path => {
+        if (path) {
+            writeTextFile(path, content, {});
+            console.log("file saved");
+            setUnsaved(false);
+        }
     })
     .catch(err => console.log(err))
 }

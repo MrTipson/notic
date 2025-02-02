@@ -7,7 +7,7 @@ import { register } from "./functions.ts";
 import { wrap } from "./hooks/wrappedState.ts";
 
 type AppState = {
-    dir: string | undefined,  setDir: StateSetter<AppState['dir']>
+  dir: string | undefined, setDir: StateSetter<AppState['dir']>
 }
 export default function App() {
   const [dir, setDir] = useState<AppState["dir"]>();
@@ -24,7 +24,7 @@ export default function App() {
   return (
     <div className="dark bg-c1-fill w-full h-full">
       <main className="px-10 w-full h-full">
-        {dir && 
+        {dir &&
           <Editor dir={dir}/>
         }
       </main>
@@ -33,8 +33,8 @@ export default function App() {
 }
 
 function openDir(state: AppState) {
-  const { setDir } = state; 
+  const { setDir } = state;
 
   open({ multiple: false, directory: true, })
-  .then((x: string | null) => x && setDir(x));
+    .then((x: string | null) => x && setDir(x));
 }
