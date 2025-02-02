@@ -4,6 +4,7 @@ const defaultShortcuts = {
     "openDirectory": ["ctrl", "o"],
     "saveFile": ["ctrl", "s"],
     "saveFileAs": ["ctrl", "shift", "s"],
+    'newFile': ['ctrl', 'n'],
 }
 
 // TODO: read config file

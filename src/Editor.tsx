@@ -59,6 +59,7 @@ export default function Editor(props: EditorProps) {
         register('saveFile', () => saveFile(editorState.current));
         register('saveFileAs', () => saveFileAs(editorState.current));
         register('openFile', (name: string) => openFile(editorState.current, name));
+        register('newFile', () => newFile(editorState.current));
     }, []);
 
     return (
@@ -128,4 +129,15 @@ function openFile(state: EditorState, name: string) {
         setUnsaved(false);
         tryRender({...state, filename: name, content });
     });
+}
+
+function newFile(state: EditorState) {
+    const { setContent, setFilename, setRendered, unsaved, setUnsaved} = state;
+    if (unsaved) {
+        // todo: ask to save or discard
+    }
+    setFilename(undefined);
+    setContent('');
+    setUnsaved(true);
+    setRendered('');
 }
