@@ -61,6 +61,11 @@ export default function Editor(props: EditorProps) {
         setError('');
     }, [dir]);
 
+    const window = useMemo(getCurrentWindow, []);
+    useEffect(() => {
+        window.setTitle(`notic${unsaved ? ' : unsaved changes' : ''}`);
+    }, [unsaved])
+
     useEffect(() => {
         register('saveFile', () => saveFile(editorState.current));
         register('saveFileAs', () => saveFileAs(editorState.current));
