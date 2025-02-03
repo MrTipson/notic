@@ -16,7 +16,7 @@ function sep(): PredefinedMenuItemOptions {
 
 export function setupMenu() {
     Menu.new({items: [
-        {kind: 'Submenu', id: 'file', text: 'File', items: [
+        {kind: 'Submenu', id: 'file', text: '&File', items: [
             menuItem('New File', 'newFile'),
             sep(),
             menuItem('Open Folder', 'openDirectory'),
@@ -25,10 +25,13 @@ export function setupMenu() {
             menuItem('Save File As', 'saveFileAs'),
             { text: 'Quit', item: 'Quit'},
         ]},
-        {kind: 'Submenu', id: 'edit', text: 'Edit', items: [
+        {kind: 'Submenu', id: 'edit', text: '&Edit', items: [
+            { text: 'Undo', item: 'Undo'},
+            { text: 'Redo', item: 'Redo'},
             { text: 'Copy', item: 'Copy'},
             { text: 'Cut', item: 'Cut'},
             { text: 'Paste', item: 'Paste'},
+            menuItem('Render', 'tryRender'),
         ]}
     ]})
     .then(menu => menu.setAsAppMenu());

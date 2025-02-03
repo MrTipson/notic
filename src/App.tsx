@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import Editor, { StateSetter } from "./Editor.tsx";
 import { open } from '@tauri-apps/plugin-dialog';
-import { shortcutHandler } from "./hotkeys.ts";
 import { register } from "./functions.ts";
 import { wrap } from "./hooks/wrappedState.ts";
 
@@ -15,10 +14,7 @@ export default function App() {
   const appState = wrap<AppState>({ dir, setDir });
 
   useEffect(() => {
-    document.addEventListener('keydown', shortcutHandler);
     register("openDirectory", () => openDir(appState.current));
-
-    return () => document.removeEventListener('keydown', shortcutHandler);
   }, []);
 
   return (
