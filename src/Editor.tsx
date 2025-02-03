@@ -1,17 +1,18 @@
 import { evaluate } from '@mdx-js/mdx';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as runtime from 'react/jsx-runtime';
 import './markdown.css';
 import EditPane from './EditPane.tsx';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 import remarkGfm from 'remark-gfm';
-import { save } from '@tauri-apps/plugin-dialog';
+import { save, ask } from '@tauri-apps/plugin-dialog';
 import { readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';
 import { register } from './functions';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import Sidebar from './Sidebar';
 import { wrap } from './hooks/wrappedState.ts';
+import ErrorBoundary from './ErrorBoundary.tsx';
 
 const options = {
     ...runtime,
@@ -31,8 +32,11 @@ type EditorState = {
     unsaved: boolean,               setUnsaved: StateSetter<EditorState['unsaved']>,
     content: string,                setContent: StateSetter<EditorState['content']>,
     rendered: any,                  setRendered: StateSetter<EditorState['rendered']>,
+    oldRendered: any,               setOldRendered: StateSetter<EditorState['oldRendered']>,
     error: string,                  setError: StateSetter<EditorState['error']>,
     mode: mode,                     setMode: StateSetter<EditorState['mode']>,
+
+    boundaryRef: any,
 }
 export default function Editor(props: EditorProps) {
     const { dir } = props;
@@ -40,8 +44,11 @@ export default function Editor(props: EditorProps) {
     const [unsaved, setUnsaved] = useState(false);
     const [content, setContent] = useState('');
     const [rendered, setRendered] = useState<any>();
+    const [oldRendered, setOldRendered] = useState<any>();
     const [error, setError] = useState('');
     const [mode, setMode] = useState<mode>('both');
+    
+    const boundaryRef = useRef();
     
     const editorState = wrap<EditorState>({
         dir,
@@ -49,8 +56,10 @@ export default function Editor(props: EditorProps) {
         unsaved, setUnsaved,
         content, setContent,
         rendered, setRendered,
+        oldRendered, setOldRendered,
         error, setError,
         mode, setMode,
+        boundaryRef,
     });
 
     useEffect(() => {
@@ -71,19 +80,33 @@ export default function Editor(props: EditorProps) {
         register('saveFileAs', () => saveFileAs(editorState.current));
         register('openFile', (name: string) => openFile(editorState.current, name));
         register('newFile', () => newFile(editorState.current));
+        register('tryRender', () => tryRender(editorState.current));
+        register('discard', () => discardChanges(editorState.current));
     }, []);
+
+    const confirmDiscard = useCallback(async () => {
+        const confirmation = await ask(
+            'Are you sure?',
+            { title: 'notic: Discard changes', kind: 'warning' }
+        );
+        
+        console.log(confirmation);
+    }, [])
 
     return (
         <>
             <div className='w-full h-full flex'>
                 <Sidebar dir={dir}/>
                 <div className='w-full h-full flex'>
-                    {(mode === 'edit' || mode === 'both') && 
-                        <EditPane className='w-1/2' content={content} setContent={setContent} />
+                    {(mode === 'edit' || mode === 'both') &&
+                        <div className='w-1/2 h-full'>
+                            <button className='block text-c1' title='Discard' onClick={confirmDiscard}>Discard</button>
+                            <EditPane className='w-full h-full' {...{content, setContent, setUnsaved}} />
+                        </div>
                     }
                     {(mode === 'preview' || mode === 'both') &&
                         <div className='md w-1/2'>
-                            {rendered}
+                            {<ErrorBoundary children={rendered} old={oldRendered} ref={boundaryRef} setError={setError}/>}
                         </div>
                     }
                 </div>
@@ -93,11 +116,13 @@ export default function Editor(props: EditorProps) {
 }
 
 async function tryRender(state: EditorState){
-    const { content, setRendered, setError } = state;
+    const { content, rendered, setRendered, setOldRendered, error, setError } = state;
     try {
         const { default: MDXContent, frontmatter } = await evaluate(content, options);
         // console.log(MDXContent.toString());
-        setRendered(MDXContent(frontmatter as any));
+        setRendered(MDXContent({ frontmatter }));
+        if(!error) setOldRendered(rendered);
+        state.boundaryRef.current?.reset();
         setError('');
         // console.log("frontmatter", frontmatter)
     } catch(error: any) {
@@ -134,23 +159,43 @@ function saveFileAs(state: EditorState) {
 }
 
 function openFile(state: EditorState, name: string) {
-    const { setContent, unsaved, setFilename, setUnsaved } = state;
-    if (unsaved) { saveFile(state); }
+    const { setContent, unsaved, setOldRendered, setFilename, setUnsaved, setError } = state;
+    if (unsaved) {
+        saveFile(state);
+    }
     readTextFile(name).then(content => {
         setContent(content);
         setFilename(name);
         setUnsaved(false);
-        tryRender({...state, filename: name, content });
+        setOldRendered('');
+        setError('');
+        tryRender({...state, rendered: '', filename: name, content });
     });
 }
 
 function newFile(state: EditorState) {
     const { setContent, setFilename, setRendered, unsaved, setUnsaved} = state;
     if (unsaved) {
-        // todo: ask to save or discard
+        saveFile(state);
     }
     setFilename(undefined);
     setContent('');
     setUnsaved(true);
     setRendered('');
+}
+
+function discardChanges(state: EditorState) {
+    const { setContent, setUnsaved, setRendered, filename } = state;
+    if (filename) {
+        readTextFile(filename)
+        .then(content => {
+            setContent(content);
+            setUnsaved(false);
+            tryRender({...state, content});
+        })
+    } else {
+        setContent('');
+        setUnsaved(false);
+        setRendered('');
+    }
 }
