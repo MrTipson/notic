@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./App.css";
-import Editor, { StateSetter } from "./Editor.tsx";
+import Editor from "./Editor.tsx";
 import { open } from '@tauri-apps/plugin-dialog';
-import { register } from "./functions.ts";
 import { wrap } from "./hooks/wrappedState.ts";
+import { funregHelper, StateSetter } from "./utils.ts";
 
 type AppState = {
   dir: string | undefined, setDir: StateSetter<AppState['dir']>
@@ -13,9 +13,7 @@ export default function App() {
   // console.log(dir);
   const appState = wrap<AppState>({ dir, setDir });
 
-  useEffect(() => {
-    register("openDirectory", () => openDir(appState.current));
-  }, []);
+  funregHelper("openDirectory", appState, openDir);
 
   return (
     <div className="bg-c1-fill w-full h-full">

@@ -8,11 +8,11 @@ import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 import remarkGfm from 'remark-gfm';
 import { save, ask } from '@tauri-apps/plugin-dialog';
 import { readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';
-import { register } from './functions';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import Sidebar from './Sidebar';
 import { wrap } from './hooks/wrappedState.ts';
 import ErrorBoundary from './ErrorBoundary.tsx';
+import { funregHelper, StateSetter } from './utils.ts';
 
 const options = {
     ...runtime,
@@ -24,7 +24,6 @@ type EditorProps = {
     dir: string,
 };
 
-export type StateSetter<T> = React.Dispatch<React.SetStateAction<T>>;
 type EditorState = {
     dir: string,
 
@@ -75,23 +74,12 @@ export default function Editor(props: EditorProps) {
         window.setTitle(`notic${unsaved ? ' : unsaved changes' : ''}`);
     }, [unsaved])
 
-    useEffect(() => {
-        register('saveFile', () => saveFile(editorState.current));
-        register('saveFileAs', () => saveFileAs(editorState.current));
-        register('openFile', (name: string) => openFile(editorState.current, name));
-        register('newFile', () => newFile(editorState.current));
-        register('tryRender', () => tryRender(editorState.current));
-        register('discard', () => discardChanges(editorState.current));
-    }, []);
-
-    const confirmDiscard = useCallback(async () => {
-        const confirmation = await ask(
-            'Are you sure?',
-            { title: 'notic: Discard changes', kind: 'warning' }
-        );
-        
-        console.log(confirmation);
-    }, [])
+    funregHelper('saveFile', editorState, saveFile);
+    funregHelper('saveFileAs', editorState, saveFileAs);
+    funregHelper('openFile', editorState, openFile);
+    funregHelper('newFile', editorState, newFile);
+    funregHelper('tryRender', editorState, tryRender);
+    funregHelper('discard', editorState, discardChanges);
 
     return (
         <>
@@ -99,8 +87,7 @@ export default function Editor(props: EditorProps) {
                 <Sidebar dir={dir}/>
                 <div className='w-full h-full flex'>
                     {(mode === 'edit' || mode === 'both') &&
-                        <div className='w-1/2 h-full'>
-                            <button className='block text-c1' title='Discard' onClick={confirmDiscard}>Discard</button>
+                        <div className='w-1/2 h-full p-2'>
                             <EditPane className='w-full h-full' {...{content, setContent, setUnsaved}} />
                         </div>
                     }

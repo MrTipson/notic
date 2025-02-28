@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { StateSetter } from "./Editor";
+import { StateSetter } from "./utils";
 
 interface EditPaneProps {
     className?: string,
