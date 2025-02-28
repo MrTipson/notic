@@ -18,7 +18,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="dark bg-c1-fill w-full h-full">
+    <div className="bg-c1-fill w-full h-full">
       <main className="px-10 w-full h-full">
         {dir &&
           <Editor dir={dir}/>

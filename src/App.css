@@ -1,37 +1,56 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
-	--primary: 0, 0%, 0%;
-	--primary-fill: 0, 0%, 100%;
-	--primary-accent: 0, 0%, 33%;
-
-	--secondary: 0, 0%, 75%;
-	--secondary-fill: 224 43% 22%;
-	--secondary-accent: 229, 29%, 47%;
+	--important: hsl(0 0% 100%);
+	--important-accent: hsl(238.23 48% 40%);
 	
-	--tertiary: 0, 0%, 75%;
-	--tertiary-fill: 224 43% 22%;
-	--tertiary-accent: 229, 29%, 47%;
+	--primary: hsl(0, 0%, 0%);
+	--primary-fill: hsl(0, 0, 100%);
+	--primary-accent: hsl(0, 0%, 33%);
+	
+	--secondary: hsl(0, 0%, 75%);
+	--secondary-fill: hsl(224 43% 22%);
+	--secondary-accent: hsl(229, 29%, 47%);
+	
+	--tertiary: hsl(0, 0%, 75%);
+	--tertiary-fill: hsl(224 43% 22%);
+	--tertiary-accent: hsl(229, 29%, 47%);
 }
 
 .dark {
-	--important: 0 0% 100%;
-	--important-accent: 238.23 48% 40%;
-
-	--primary: 240, 4.9%, 83.9%;
-	--primary-fill: 220.5 45.7% 15.9%;
-	--primary-accent: 229.2 100% 68.4%;
-
-	--secondary: 0 0 68;
-	--secondary-fill: 0 0% 2%;
-	--secondary-accent: 199 81.3 42;
+	--important: hsl(0 0% 100%);
+	--important-accent: hsl(238.23 48% 40%);
 	
-	--tertiary: 0 0 53;
-	--tertiary-fill: 223.3 12.7% 27.8%;
-	--tertiary-accent: 229, 29%, 47%;
+	--primary: hsl(240, 4.9%, 83.9%);
+	--primary-fill: hsl(220.5 45.7% 15.9%);
+	--primary-accent: hsl(229.2 100% 68.4%);
+	
+	--secondary: hsl(0 0 68);
+	--secondary-fill: hsl(0 0% 2%);
+	--secondary-accent: hsl(199 81.3 42);
+	
+	--tertiary: hsl(0 0 53);
+	--tertiary-fill: hsl(223.3 12.7% 27.8%);
+	--tertiary-accent: hsl(229, 29%, 47%);
 }
+	
+@theme {
+	--color-c0: var(--important);
+	--color-c0-accent: var(--important-accent);
+	
+	--color-c1: var(--primary);
+	--color-c1-fill: var(--primary-fill);
+	--color-c1-accent: var(--primary-accent);
+	
+	--color-c2: var(--secondary);
+	--color-c2-fill: var(--secondary-fill);
+	--color-c2-accent: var(--secondary-accent);
+	
+	--color-c3: var(--tertiary);
+	--color-c3-fill: var(--tertiary-fill);
+	--color-c3-accent: var(--tertiary-accent);
+}
+
 * {
 	scrollbar-width: 4px;
 	scrollbar-color: hsl(var(--tertiary)) hsl(var(--tertiary-fill));

@@ -5,6 +5,8 @@ import { setupMenu } from "./menu";
 
 setupMenu();
 
+document.querySelector("html")?.classList.add("dark");
+
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <App />
