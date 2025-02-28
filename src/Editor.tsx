@@ -1,5 +1,5 @@
 import { evaluate } from '@mdx-js/mdx';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import * as runtime from 'react/jsx-runtime';
 import './markdown.css';
 import EditPane from './EditPane.tsx';
@@ -145,10 +145,10 @@ function saveFileAs(state: EditorState) {
     .catch(err => console.log(err))
 }
 
-function openFile(state: EditorState, name: string) {
+async function openFile(state: EditorState, name: string) {
     const { setContent, unsaved, setOldRendered, setFilename, setUnsaved, setError } = state;
-    if (unsaved) {
-        saveFile(state);
+    if (unsaved && !await discardChanges(state)) {
+        return;
     }
     readTextFile(name).then(content => {
         setContent(content);
@@ -160,10 +160,10 @@ function openFile(state: EditorState, name: string) {
     });
 }
 
-function newFile(state: EditorState) {
+async function newFile(state: EditorState) {
     const { setContent, setFilename, setRendered, unsaved, setUnsaved} = state;
-    if (unsaved) {
-        saveFile(state);
+    if (unsaved && !await discardChanges(state)) {
+        return;
     }
     setFilename(undefined);
     setContent('');
@@ -171,8 +171,15 @@ function newFile(state: EditorState) {
     setRendered('');
 }
 
-function discardChanges(state: EditorState) {
+async function discardChanges(state: EditorState) {
     const { setContent, setUnsaved, setRendered, filename } = state;
+
+    const confirmation = await ask(
+        'Are you sure?',
+        { title: 'notic: Discard changes', kind: 'warning' }
+    );
+    if (!confirmation) return false;
+
     if (filename) {
         readTextFile(filename)
         .then(content => {
@@ -185,4 +192,5 @@ function discardChanges(state: EditorState) {
         setUnsaved(false);
         setRendered('');
     }
+    return true;
 }
