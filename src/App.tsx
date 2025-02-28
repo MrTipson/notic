@@ -31,6 +31,6 @@ export default function App() {
 function openDir(state: AppState) {
   const { setDir } = state;
 
-  open({ multiple: false, directory: true, })
+  open({ multiple: false, directory: true, recursive: true, })
     .then((x: string | null) => x && setDir(x));
 }
