@@ -47,7 +47,7 @@ export default function Editor(props: EditorProps) {
     const [error, setError] = useState('');
     const [mode, setMode] = useState<mode>('both');
     
-    const boundaryRef = useRef();
+    const boundaryRef = useRef<ErrorBoundary>(null);
     
     const editorState = wrap<EditorState>({
         dir,

@@ -1,7 +1,14 @@
 // @ts-nocheck
 import React from "react";
+import { type StateSetter } from "./Editor";
 
-export default class ErrorBoundary extends React.Component {
+interface ErrorBoundaryProps {
+    setError: StateSetter<string>
+    old: any
+    children: any
+}
+
+export default class ErrorBoundary extends React.Component<ErrorBoundaryProps> {
 
     constructor(props) {
         super(props);
