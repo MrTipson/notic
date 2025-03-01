@@ -1,30 +1,20 @@
-import { evaluate } from '@mdx-js/mdx';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import * as runtime from 'react/jsx-runtime';
 import './markdown.css';
 import EditPane from './EditPane.tsx';
-import remarkFrontmatter from 'remark-frontmatter';
-import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
-import remarkGfm from 'remark-gfm';
-import { save, ask } from '@tauri-apps/plugin-dialog';
-import { readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import Sidebar from './Sidebar';
 import { wrap } from './hooks/wrappedState.ts';
 import ErrorBoundary from './ErrorBoundary.tsx';
 import { funregHelper, StateSetter } from './utils.ts';
+import { saveFile, saveFileAs, openFile, newFile, tryRender, discardChanges, toggleSidebar } from './EditorActions.ts';
 
-const options = {
-    ...runtime,
-    remarkPlugins: [ remarkFrontmatter, remarkMdxFrontmatter, remarkGfm ],
-};
 type mode = 'edit' | 'preview' | 'both';
 
 type EditorProps = {
     dir: string,
 };
 
-type EditorState = {
+export type EditorState = {
     dir: string,
 
     filename: string | undefined,   setFilename: StateSetter<EditorState['filename']>,
@@ -109,104 +99,4 @@ export default function Editor(props: EditorProps) {
             </div>
         </>
     );
-}
-
-async function tryRender(state: EditorState){
-    const { content, rendered, setRendered, setOldRendered, error, setError } = state;
-    try {
-        const { default: MDXContent, frontmatter } = await evaluate(content, options);
-        // console.log(MDXContent.toString());
-        setRendered(MDXContent({ frontmatter }));
-        if(!error) setOldRendered(rendered);
-        state.boundaryRef.current?.reset();
-        setError('');
-        // console.log("frontmatter", frontmatter)
-    } catch(error: any) {
-        console.log(error);
-        setError(error);
-    }
-}
-
-function saveFile(state: EditorState) {
-    const { filename, content, setUnsaved } = state;
-    if(!filename) {
-        return saveFileAs(state);
-    }
-    console.log('saving', filename);
-    tryRender(state);
-    writeTextFile(filename, content, {})
-    .then(() => setUnsaved(false));
-}
-
-function saveFileAs(state: EditorState) {
-    const { dir, content, setUnsaved, setFilename } = state;
-    save({
-        filters: [ { name: 'Markdown', extensions: ['mdx', 'md'] } ],
-        defaultPath: dir,
-    })
-    .then(path => {
-        if (path) {
-            writeTextFile(path, content, {});
-            console.log("file saved");
-            setUnsaved(false);
-            setFilename(path);
-            tryRender(state);
-        }
-    })
-    .catch(err => console.log(err))
-}
-
-async function openFile(state: EditorState, name: string) {
-    const { setContent, unsaved, setOldRendered, setFilename, setUnsaved, setError } = state;
-    if (unsaved && !await discardChanges(state)) {
-        return;
-    }
-    readTextFile(name).then(content => {
-        setContent(content);
-        setFilename(name);
-        setUnsaved(false);
-        setOldRendered('');
-        setError('');
-        tryRender({...state, rendered: '', filename: name, content });
-    });
-}
-
-async function newFile(state: EditorState) {
-    const { setContent, setFilename, setRendered, unsaved, setUnsaved} = state;
-    if (unsaved && !await discardChanges(state)) {
-        return;
-    }
-    setFilename(undefined);
-    setContent('');
-    setUnsaved(true);
-    setRendered('');
-}
-
-async function discardChanges(state: EditorState) {
-    const { setContent, setUnsaved, setRendered, filename } = state;
-
-    const confirmation = await ask(
-        'Are you sure?',
-        { title: 'notic: Discard changes', kind: 'warning' }
-    );
-    if (!confirmation) return false;
-
-    if (filename) {
-        readTextFile(filename)
-        .then(content => {
-            setContent(content);
-            setUnsaved(false);
-            tryRender({...state, content});
-        })
-    } else {
-        setContent('');
-        setUnsaved(false);
-        setRendered('');
-    }
-    return true;
-}
-
-function toggleSidebar(state: EditorState) {
-    const { sidebarOpen, setSidebarOpen } = state;
-    setSidebarOpen(!sidebarOpen);
 }
