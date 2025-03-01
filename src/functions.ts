@@ -5,6 +5,11 @@ export function register(name: string, f: Function) {
     functions.set(name, f);
 }
 
+export function unregister(name: string) {
+    console.log("unregistering function for", name);
+    functions.delete(name);
+}
+
 export function invoke(name: string, ...rest: any[]) {
     const f = functions.get(name);
     // console.log('invoke', f);
