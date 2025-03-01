@@ -40,13 +40,13 @@ function renderChildren(children: FileEntry[], refresh: ()=>void) {
     ).map(f => {
         if (f.children) {
             return (
-                <details key={f.path} className='pl-6'>
-                    <summary className='hover:text-c0' onClick={() => {f.isExpanded = !f.isExpanded; refresh();}}>{f.name}</summary>
+                <details key={f.path} className='pl-6' tabIndex={-1}>
+                    <summary className='hover:text-c0 outline-none' onClick={() => {f.isExpanded = !f.isExpanded; refresh();}}>{f.name}</summary>
                     <div>{f.isExpanded && renderChildren(f.children(), refresh)}</div>
                 </details>
             );
         } else {
-            return <div key={f.path} className='pl-6 hover:text-c0 cursor-pointer' onClick={() => invoke('openFile', f.path)}>{f.name}</div>    
+            return <div key={f.path} className='pl-6 hover:text-c0 cursor-pointer' onClick={() => invoke('openFile', f.path)}>{f.name}</div>
         }
     });
 }
@@ -60,6 +60,7 @@ export default function FileBrowser(props: FileBrowserProps) {
 
     return (
         <div className='text-c1 select-none'>
+            <div className="text-sm text-c2 pl-2">{dir.split("/").pop()}</div>
             {files.children ? renderChildren(files.children(), refresh) : "internal error"}
         </div>
     );

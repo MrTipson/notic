@@ -84,16 +84,20 @@ export default function Editor(props: EditorProps) {
     return (
         <>
             <div className='w-full h-full flex'>
-                <Sidebar dir={dir}/>
+                <div className='focus:inset-shadow-md rounded-md inset-shadow-c1-accent outline-none'
+                    tabIndex={1}><Sidebar dir={dir} /></div>
                 <div className='w-full h-full flex'>
                     {(mode === 'edit' || mode === 'both') &&
-                        <div className='w-1/2 h-full p-2'>
-                            <EditPane className='w-full h-full' {...{content, setContent, setUnsaved}} />
+                        <div className='w-1/2 h-full focus:inset-shadow-md rounded-md inset-shadow-c1-accent outline-none bg-c2-fill text-c2 caret-c1 px-2'
+                            tabIndex={2}>
+                            <EditPane {...{content, setContent, setUnsaved}} />
                         </div>
                     }
                     {(mode === 'preview' || mode === 'both') &&
-                        <div className='md w-1/2'>
+                        <div className='md w-1/2 h-full focus-within:inset-shadow-md rounded-md inset-shadow-c1-accent pr-2'>
+                            <div className='overflow-auto h-full w-full pb-5 outline-none' tabIndex={3}>
                             {<ErrorBoundary children={rendered} old={oldRendered} ref={boundaryRef} setError={setError}/>}
+                            </div>
                         </div>
                     }
                 </div>

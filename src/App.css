@@ -49,27 +49,23 @@
 	--color-c3: var(--tertiary);
 	--color-c3-fill: var(--tertiary-fill);
 	--color-c3-accent: var(--tertiary-accent);
-}
 
-* {
-	scrollbar-width: 4px;
-	scrollbar-color: hsl(var(--tertiary)) hsl(var(--tertiary-fill));
+	--inset-shadow-md: inset 0 0 5px var(--tw-inset-shadow-color);
 }
 *::-webkit-scrollbar {
-	@apply w-3 m-1;
+	@apply w-2;
 }
 *::-webkit-scrollbar-thumb {
 	@apply bg-c3;
 }
 *::-webkit-scrollbar-track {
-	@apply bg-c3-accent;
+	@apply bg-c3-fill my-2;
 }
-
 * {
 	@apply box-border;
 }
 html, body, #root {
-	@apply h-full w-full;
+	@apply h-full w-full overflow-hidden;
 }
 
 summary {
