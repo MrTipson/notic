@@ -134,7 +134,7 @@ function saveFile(state: EditorState) {
 }
 
 function saveFileAs(state: EditorState) {
-    const { dir, content, setUnsaved } = state;
+    const { dir, content, setUnsaved, setFilename } = state;
     save({
         filters: [ { name: 'Markdown', extensions: ['mdx', 'md'] } ],
         defaultPath: dir,
@@ -144,6 +144,8 @@ function saveFileAs(state: EditorState) {
             writeTextFile(path, content, {});
             console.log("file saved");
             setUnsaved(false);
+            setFilename(path);
+            tryRender(state);
         }
     })
     .catch(err => console.log(err))
