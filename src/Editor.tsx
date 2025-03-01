@@ -34,6 +34,7 @@ type EditorState = {
     oldRendered: any,               setOldRendered: StateSetter<EditorState['oldRendered']>,
     error: string,                  setError: StateSetter<EditorState['error']>,
     mode: mode,                     setMode: StateSetter<EditorState['mode']>,
+    sidebarOpen: boolean,           setSidebarOpen: StateSetter<EditorState['sidebarOpen']>,
 
     boundaryRef: any,
 }
@@ -46,6 +47,7 @@ export default function Editor(props: EditorProps) {
     const [oldRendered, setOldRendered] = useState<any>();
     const [error, setError] = useState('');
     const [mode, setMode] = useState<mode>('both');
+    const [sidebarOpen, setSidebarOpen] = useState(true);
     
     const boundaryRef = useRef<ErrorBoundary>(null);
     
@@ -58,6 +60,7 @@ export default function Editor(props: EditorProps) {
         oldRendered, setOldRendered,
         error, setError,
         mode, setMode,
+        sidebarOpen, setSidebarOpen,
         boundaryRef,
     });
 
@@ -80,12 +83,14 @@ export default function Editor(props: EditorProps) {
     funregHelper('newFile', editorState, newFile);
     funregHelper('tryRender', editorState, tryRender);
     funregHelper('discard', editorState, discardChanges);
+    funregHelper('toggleSidebar', editorState, toggleSidebar);
 
     return (
         <>
             <div className='w-full h-full flex'>
-                <div className='focus:inset-shadow-md rounded-md inset-shadow-c1-accent outline-none'
-                    tabIndex={1}><Sidebar dir={dir} /></div>
+                {sidebarOpen && 
+                    <div className='focus:inset-shadow-md rounded-md inset-shadow-c1-accent outline-none'
+                        tabIndex={1}><Sidebar dir={dir} /></div>}
                 <div className='w-full h-full flex'>
                     {(mode === 'edit' || mode === 'both') &&
                         <div className='w-1/2 h-full focus:inset-shadow-md rounded-md inset-shadow-c1-accent outline-none bg-c2-fill text-c2 caret-c1 px-2'
@@ -96,7 +101,7 @@ export default function Editor(props: EditorProps) {
                     {(mode === 'preview' || mode === 'both') &&
                         <div className='md w-1/2 h-full focus-within:inset-shadow-md rounded-md inset-shadow-c1-accent pr-2'>
                             <div className='overflow-auto h-full w-full pb-5 outline-none' tabIndex={3}>
-                            {<ErrorBoundary children={rendered} old={oldRendered} ref={boundaryRef} setError={setError}/>}
+                                {<ErrorBoundary children={rendered} old={oldRendered} ref={boundaryRef} setError={setError}/>}
                             </div>
                         </div>
                     }
@@ -199,4 +204,9 @@ async function discardChanges(state: EditorState) {
         setRendered('');
     }
     return true;
+}
+
+function toggleSidebar(state: EditorState) {
+    const { sidebarOpen, setSidebarOpen } = state;
+    setSidebarOpen(!sidebarOpen);
 }

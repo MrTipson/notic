@@ -32,6 +32,9 @@ export function setupMenu() {
             { text: 'Cut', item: 'Cut'},
             { text: 'Paste', item: 'Paste'},
             menuItem('Render', 'tryRender'),
+        ]},
+        {kind: 'Submenu', id: 'view', text: '&View', items: [
+            menuItem('Toggle sidebar', 'toggleSidebar'),
         ]}
     ]})
     .then(menu => menu.setAsAppMenu());
