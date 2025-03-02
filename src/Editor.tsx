@@ -25,6 +25,7 @@ export type EditorState = {
     error: string,                  setError: StateSetter<EditorState['error']>,
     mode: mode,                     setMode: StateSetter<EditorState['mode']>,
     sidebarOpen: boolean,           setSidebarOpen: StateSetter<EditorState['sidebarOpen']>,
+    sidebarEventHandler: React.KeyboardEventHandler,           setSidebarEventHandler: StateSetter<EditorState['sidebarEventHandler']>,
 
     boundaryRef: any,
 }
@@ -38,6 +39,7 @@ export default function Editor(props: EditorProps) {
     const [error, setError] = useState('');
     const [mode, setMode] = useState<mode>('both');
     const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarEventHandler, setSidebarEventHandler] = useState<React.KeyboardEventHandler>(() => () => {});
     
     const boundaryRef = useRef<ErrorBoundary>(null);
     
@@ -51,6 +53,7 @@ export default function Editor(props: EditorProps) {
         error, setError,
         mode, setMode,
         sidebarOpen, setSidebarOpen,
+        sidebarEventHandler, setSidebarEventHandler,
         boundaryRef,
     });
 
@@ -79,12 +82,15 @@ export default function Editor(props: EditorProps) {
         <>
             <div className='w-full h-full flex'>
                 {sidebarOpen && 
-                    <div className='focus:inset-shadow-md rounded-md inset-shadow-c1-accent outline-none'
-                        tabIndex={1}><Sidebar dir={dir} /></div>}
+                    <div className='focus-within:inset-shadow-md rounded-md inset-shadow-c1-accent outline-none'
+                        tabIndex={1} onKeyDown={sidebarEventHandler}>
+                            <Sidebar dir={dir} filename={filename} setSidebarEventHandler={setSidebarEventHandler}/>
+                    </div>
+                }
                 <div className='w-full h-full flex'>
                     {(mode === 'edit' || mode === 'both') &&
                         <div className='w-1/2 h-full focus:inset-shadow-md rounded-md inset-shadow-c1-accent outline-none bg-c2-fill text-c2 caret-c1 px-2'
-                            tabIndex={2}>
+                            tabIndex={2} onKeyDown={onKeyDownEditPane}>
                             <EditPane {...{content, setContent, setUnsaved}} />
                         </div>
                     }
@@ -99,4 +105,19 @@ export default function Editor(props: EditorProps) {
             </div>
         </>
     );
+}
+
+function onKeyDownEditPane(event: any) {
+    const target = event.target;
+    if(target.tabIndex > 0) { // targeting parent and not textarea
+        if (!event.shiftKey && !(event.key === 'Tab' && event.shiftKey)) {
+            console.log('correct element');
+            target.querySelector('textarea').focus();
+        }
+    } else if(event.key === 'Escape') { // pressing escape in textarea
+        target.parentNode.focus();
+    } else if(event.key === 'Tab') { // pressing tab in textarea
+        document.execCommand('insertText', undefined, '  '); // 2 spaces
+        event.preventDefault();
+    }
 }
