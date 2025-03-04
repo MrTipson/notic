@@ -1,22 +1,12 @@
-import { evaluate } from '@mdx-js/mdx';
 import { save, ask } from '@tauri-apps/plugin-dialog';
 import { readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';
 import { EditorState } from './Editor';
+import { render } from './plugins';
 
-import * as runtime from 'react/jsx-runtime';
-import remarkFrontmatter from 'remark-frontmatter';
-import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
-import remarkGfm from 'remark-gfm';
-const options = {
-    ...runtime,
-    remarkPlugins: [ remarkFrontmatter, remarkMdxFrontmatter, remarkGfm ],
-};
 export async function tryRender(state: EditorState){
-    const { content, rendered, setRendered, setOldRendered, error, setError } = state;
+    const { rendered, setRendered, setOldRendered, error, setError } = state;
     try {
-        const { default: MDXContent, frontmatter } = await evaluate(content, options);
-        // console.log(MDXContent.toString());
-        setRendered(MDXContent({ frontmatter }));
+        setRendered(await render(state));
         if(!error) setOldRendered(rendered);
         state.boundaryRef.current?.reset();
         setError('');

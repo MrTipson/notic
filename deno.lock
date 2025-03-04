@@ -17,6 +17,7 @@
     "npm:react-dom@19": "19.0.0_react@19.0.0",
     "npm:react@19": "19.0.0",
     "npm:remark-frontmatter@5": "5.0.0",
+    "npm:remark-gfm@*": "4.0.1",
     "npm:remark-gfm@^4.0.1": "4.0.1",
     "npm:remark-mdx-frontmatter@5": "5.0.0",
     "npm:remark-mdx@^3.1.0": "3.1.0",

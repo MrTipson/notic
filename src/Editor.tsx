@@ -12,10 +12,12 @@ type mode = 'edit' | 'preview' | 'both';
 
 type EditorProps = {
     dir: string,
+    plugins: string[],
 };
 
 export type EditorState = {
     dir: string,
+    plugins: string[],
 
     filename: string | undefined,   setFilename: StateSetter<EditorState['filename']>,
     unsaved: boolean,               setUnsaved: StateSetter<EditorState['unsaved']>,
@@ -30,7 +32,7 @@ export type EditorState = {
     boundaryRef: any,
 }
 export default function Editor(props: EditorProps) {
-    const { dir } = props;
+    const { dir, plugins } = props;
     const [filename, setFilename] = useState<string>();
     const [unsaved, setUnsaved] = useState(false);
     const [content, setContent] = useState('');
@@ -44,7 +46,7 @@ export default function Editor(props: EditorProps) {
     const boundaryRef = useRef<ErrorBoundary>(null);
     
     const editorState = wrap<EditorState>({
-        dir,
+        dir, plugins,
         filename, setFilename,
         unsaved, setUnsaved,
         content, setContent,
