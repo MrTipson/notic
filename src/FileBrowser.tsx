@@ -73,6 +73,12 @@ export default function FileBrowser(props: FileBrowserProps) {
 
     const handleInput = useCallback((event: KeyboardEvent) => {
         if (!highlighted) {
+            if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+                const children = (files.children as any)();
+                if (children.length > 0) {
+                    setHighlighted(children[0]);
+                }
+            }
             return;
         }
         switch (event.key) {
@@ -80,11 +86,9 @@ export default function FileBrowser(props: FileBrowserProps) {
                 if (highlighted.childIndex > 0) {
                     let children = (highlighted.parent?.children as any)();
                     let previous = children[highlighted.childIndex - 1];
-                    console.log(children)
                     while (previous.isExpanded) {
                         children = previous.children();
                         previous = children[children.length - 1];
-                        console.log(children)
                     }
                     setHighlighted(previous);
                 } else if (highlighted.parent && highlighted.parent.name !== '') {

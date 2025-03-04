@@ -1,12 +1,12 @@
 const functions = new Map();
 
 export function register(name: string, f: Function) {
-    console.log("registering function for", name);
+    // console.log("registering function for", name);
     functions.set(name, f);
 }
 
 export function unregister(name: string) {
-    console.log("unregistering function for", name);
+    // console.log("unregistering function for", name);
     functions.delete(name);
 }
 

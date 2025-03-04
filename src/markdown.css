@@ -19,7 +19,7 @@
 .md ul, .md ol { @apply ml-4 text-c2 list-inside }
 .md ul.contains-task-list { @apply list-none }
 .md .footnotes > ol { @apply list-outside }
-.md .footnotes { @apply border-t mt-8}
+.md .footnotes { @apply mt-8}
 
 .md thead { @apply border-b border-b-c1 text-left}
 .md td,.md th { @apply px-3 py-1}
