@@ -1,9 +1,12 @@
 import { NoticPlugin } from "..";
 import { z } from 'zod';
 
-export const title: NoticPlugin['title'] = 'Layouts and schemes'
-export const description: NoticPlugin['description'] = 'Set the \'layout\' field in the frontmatter to use another file as the layout. \
-That file can optionally specify the additional frontmatter fields it requires to properly render the final output.'
+export const { title, description, dependencies }: NoticPlugin = {
+    title: 'Layouts and schemes',
+    description: 'Set the \'layout\' field in the frontmatter to use another file as the layout. \
+That file can optionally specify the additional frontmatter fields it requires to properly render the final output.',
+    dependencies: Object.freeze(['frontmatter']),
+};
 
 export const apply: NoticPlugin['apply'] = async (api, props) => {
     
