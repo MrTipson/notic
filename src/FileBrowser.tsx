@@ -19,15 +19,15 @@ interface FileEntry {
 function compareDirEntry(a: DirEntry, b: DirEntry) {
     return a.isDirectory === b.isDirectory ? a.name.localeCompare(b.name) : a.isDirectory ? -1 : 1;
 }
-function readFolder(prefix: string, name: string, done: ()=>void) {
-    const path = name !== '' ? `${prefix}/${name}` : prefix;
-    const entry: FileEntry = { name, path, parent: null, childIndex: -1, children: () => {
-        readDir(path)
+function readFolder(dir: string, path: string, done: ()=>void) {
+    const fullpath = dir + path;
+    const entry: FileEntry = { name: 'root', path, parent: null, childIndex: -1, children: () => {
+        readDir(fullpath)
         .then(fs => {
             const sorted = fs.sort(compareDirEntry);
             const children = sorted.map<FileEntry>((f,i) => {
                 if (f.isDirectory) {
-                    const e = readFolder(path, f.name, done);
+                    const e = readFolder(fullpath, '/' + f.name, done);
                     e.parent = entry;
                     e.childIndex = i;
                     return e;

@@ -47,11 +47,11 @@ export function saveFileAs(state: EditorState) {
 }
 
 export async function openFile(state: EditorState, name: string) {
-    const { setContent, unsaved, setOldRendered, setFilename, setUnsaved, setError } = state;
+    const { setContent, unsaved, setOldRendered, setFilename, setUnsaved, setError, dir } = state;
     if (unsaved && !await discardChanges(state)) {
         return;
     }
-    readTextFile(name).then(content => {
+    readTextFile(dir + '/' + name).then(content => {
         setContent(content);
         setFilename(name);
         setUnsaved(false);
