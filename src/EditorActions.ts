@@ -100,3 +100,7 @@ export function toggleSidebar(state: EditorState) {
     const { sidebarOpen, setSidebarOpen } = state;
     setSidebarOpen(!sidebarOpen);
 }
+
+export function printFile(state: EditorState) {
+    window.print();
+}

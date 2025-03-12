@@ -80,3 +80,22 @@ details[open] > summary::before {
 summary::marker, summary::-webkit-details-marker {
 	@apply hidden
 }
+
+@media print {
+	:root {
+		--important: black;
+		--important-accent: hsl(238.23 48% 40%);
+		
+		--primary: rgb(26, 26, 26);
+		--primary-fill: white;
+		--primary-accent: hsl(229.2 100% 68.4%);
+		
+		--secondary: rgb(43, 43, 43);
+		--secondary-fill: white;
+		--secondary-accent: hsl(199 81.3 42);
+		
+		--tertiary: rgb(70, 70, 70);
+		--tertiary-fill: white;
+		--tertiary-accent: hsl(229, 29%, 47%);
+	}
+}

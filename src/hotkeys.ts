@@ -5,6 +5,7 @@ const defaultShortcuts = {
     'newFile': ['ctrl', 'n'],
     'tryRender': ['ctrl', 'Tab'],
     'toggleSidebar': ['ctrl', 'b'],
+    'printFile': ['ctrl', 'p'],
 }
 
 // TODO: read config file

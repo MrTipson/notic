@@ -23,6 +23,9 @@ export function setupMenu() {
             sep(),
             menuItem('Save File', 'saveFile'),
             menuItem('Save File As', 'saveFileAs'),
+            sep(),
+            menuItem('Export File', 'printFile'),
+            sep(),
             { text: 'Quit', item: 'Quit'},
         ]},
         {kind: 'Submenu', id: 'edit', text: '&Edit', items: [

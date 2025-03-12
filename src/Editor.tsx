@@ -6,7 +6,7 @@ import Sidebar from './Sidebar';
 import { wrap } from './hooks/wrappedState.ts';
 import ErrorBoundary from './ErrorBoundary.tsx';
 import { funregHelper, StateSetter } from './utils.ts';
-import { saveFile, saveFileAs, openFile, newFile, tryRender, discardChanges, toggleSidebar } from './EditorActions.ts';
+import { saveFile, saveFileAs, openFile, newFile, tryRender, discardChanges, toggleSidebar, printFile } from './EditorActions.ts';
 
 type mode = 'edit' | 'preview' | 'both';
 
@@ -29,7 +29,7 @@ export type EditorState = {
     sidebarOpen: boolean,           setSidebarOpen: StateSetter<EditorState['sidebarOpen']>,
     sidebarEventHandler: React.KeyboardEventHandler,           setSidebarEventHandler: StateSetter<EditorState['sidebarEventHandler']>,
 
-    boundaryRef: any,
+    boundaryRef: React.RefObject<ErrorBoundary | null>,
 }
 export default function Editor(props: EditorProps) {
     const { dir, plugins } = props;
@@ -79,25 +79,26 @@ export default function Editor(props: EditorProps) {
     funregHelper('tryRender', editorState, tryRender);
     funregHelper('discard', editorState, discardChanges);
     funregHelper('toggleSidebar', editorState, toggleSidebar);
+    funregHelper('printFile', editorState, printFile);
 
     return (
         <>
             <div className='w-full h-full flex'>
                 {sidebarOpen && 
-                    <div className='focus-within:inset-shadow-md rounded-md inset-shadow-c1-accent outline-none'
+                    <div className='focus-within:inset-shadow-md rounded-md inset-shadow-c1-accent outline-none print:hidden'
                         tabIndex={1} onKeyDown={sidebarEventHandler}>
                             <Sidebar dir={dir} filename={filename} setSidebarEventHandler={setSidebarEventHandler}/>
                     </div>
                 }
                 <div className='w-full h-full flex'>
                     {(mode === 'edit' || mode === 'both') &&
-                        <div className='w-1/2 h-full focus:inset-shadow-md rounded-md inset-shadow-c1-accent outline-none bg-c2-fill text-c2 caret-c1 px-2'
+                        <div className='w-1/2 h-full focus:inset-shadow-md rounded-md inset-shadow-c1-accent outline-none bg-c2-fill text-c2 caret-c1 px-2 print:hidden'
                             tabIndex={2} onKeyDown={onKeyDownEditPane}>
                             <EditPane {...{content, setContent, setUnsaved}} />
                         </div>
                     }
                     {(mode === 'preview' || mode === 'both') &&
-                        <div className='md w-1/2 h-full focus-within:inset-shadow-md rounded-md inset-shadow-c1-accent pr-2'>
+                        <div className='md w-1/2 h-full focus-within:inset-shadow-md rounded-md inset-shadow-c1-accent pr-2 print:inset-shadow-transparent print:w-full'>
                             <div className='overflow-auto h-full w-full pb-5 outline-none' tabIndex={3}>
                                 {<ErrorBoundary children={rendered} old={oldRendered} ref={boundaryRef} setError={setError}/>}
                             </div>
