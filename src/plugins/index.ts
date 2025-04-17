@@ -55,7 +55,7 @@ async function importPlugins(plugins: string[]) {
 }
 
 export async function render(state: EditorState) {
-    const { content, plugins, dir } = state;
+    const { content, plugins } = state;
     const { imported, options } = await importPlugins(plugins);
 
     const { default: MDXContent, ...props } = await evaluate(content, options);

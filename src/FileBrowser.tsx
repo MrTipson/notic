@@ -66,7 +66,7 @@ function renderChildren(
 }
 
 export default function FileBrowser(props: FileBrowserProps) {
-    const { dir, filename, setHandler } = props;
+    const { dir, setHandler } = props;
     const [_refresh, _setRefresh] = useState(false);
     const [highlighted, setHighlighted] = useState<FileEntry>();
     const refresh = useMemo(() => () => _setRefresh(!_refresh), [_refresh, _setRefresh]);

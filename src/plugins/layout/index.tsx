@@ -1,5 +1,6 @@
 import { NoticPlugin } from "..";
-import { z } from 'zod';
+// @ts-ignore
+import { z } from 'https://esm.sh/zod';
 
 export const { title, description, dependencies }: NoticPlugin = {
     title: 'Layouts and schemes',

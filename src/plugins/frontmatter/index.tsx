@@ -1,5 +1,7 @@
-import remarkFrontmatter from 'remark-frontmatter';
-import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
+// @ts-ignore
+import remarkFrontmatter from 'https://esm.sh/remark-frontmatter';
+// @ts-ignore
+import remarkMdxFrontmatter from 'https://esm.sh/remark-mdx-frontmatter';
 import { NoticPlugin } from '..';
 
 export const {title, description, options}: NoticPlugin = {

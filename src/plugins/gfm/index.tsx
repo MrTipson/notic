@@ -1,4 +1,5 @@
-import remarkGfm from 'remark-gfm';
+// @ts-ignore
+import remarkGfm from 'https://esm.sh/remark-gfm';
 import { NoticPlugin } from '..';
 
 export const { title, description, options}: NoticPlugin = {

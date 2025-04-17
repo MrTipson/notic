@@ -101,6 +101,6 @@ export function toggleSidebar(state: EditorState) {
     setSidebarOpen(!sidebarOpen);
 }
 
-export function printFile(state: EditorState) {
+export function printFile(_state: EditorState) {
     window.print();
 }
