@@ -10,8 +10,8 @@
 
 .md blockquote { @apply border-l-c2 border-l-2 px-2 py-1 bg-c2-fill/50 my-4 }
 
-.md pre { @apply p-2 w-full bg-c2-fill/50}
-.md code { @apply bg-c2-fill/50 px-1 py-0.5 }
+.md pre { @apply p-2 w-full bg-c3-fill overflow-auto }
+.md code { @apply text-c3 px-1 py-0.5 }
 .md pre > code { @apply bg-transparent p-0 }
 
 .md ul { @apply list-disc }

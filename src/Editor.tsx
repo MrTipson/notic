@@ -98,7 +98,7 @@ export default function Editor(props: EditorProps) {
                         </div>
                     }
                     {(mode === 'preview' || mode === 'both') &&
-                        <div className='md w-1/2 h-full focus-within:inset-shadow-md rounded-md inset-shadow-c1-accent pr-2 print:inset-shadow-transparent print:w-full'>
+                        <div className='md w-1/2 h-full relative focus-within:after:inset-shadow-md after:absolute after-content-[""] after:inset-0 rounded-md after:inset-shadow-c1-accent pr-2 print:inset-shadow-transparent print:w-full'>
                             <div className='overflow-auto h-full w-full pb-5 outline-none' tabIndex={3}>
                                 {<ErrorBoundary children={rendered} old={oldRendered} ref={boundaryRef} setError={setError}/>}
                             </div>
