@@ -11,7 +11,7 @@ type AppState = {
 }
 export default function App() {
   const [dir, setDir] = useState<AppState["dir"]>();
-  const [plugins, setPlugins] = useState(['gfm', 'layout', 'placeholder-children']);
+  const [plugins, setPlugins] = useState(['gfm', 'layout', 'placeholders']);
   // console.log(dir);
   const appState = wrap<AppState>({
     dir, setDir,
