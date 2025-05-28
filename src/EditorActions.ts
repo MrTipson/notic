@@ -18,13 +18,13 @@ export async function tryRender(state: EditorState){
 }
 
 export function saveFile(state: EditorState) {
-    const { filename, content, setUnsaved } = state;
+    const { dir, filename, content, setUnsaved } = state;
     if(!filename) {
         return saveFileAs(state);
     }
-    console.log('saving', filename);
+    console.log('saving', dir + '/' + filename);
     tryRender(state);
-    writeTextFile(filename, content, {})
+    writeTextFile(dir + '/' + filename, content, {})
     .then(() => setUnsaved(false));
 }
 
