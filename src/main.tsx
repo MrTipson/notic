@@ -27,9 +27,9 @@ window.addEventListener('click', async (e) => {
     if (a.host === 'localhost:1420') { // Relative links
       invoke('openFile', a.pathname)
     } else { // Websites
-      // doesnt work yet
+      // should work although there might be some issues?
       // https://github.com/tauri-apps/tauri/issues/10617
-      console.log('should open', a.href, 'but tauri bug');
+      // console.log('should open', a.href, 'but tauri bug');
       await openUrl(a.href);
     }
   }

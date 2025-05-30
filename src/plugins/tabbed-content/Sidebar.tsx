@@ -1,6 +1,6 @@
 import { useState } from "react";
-import FileBrowser from "./FileBrowser";
-import { EditorState } from "./Editor";
+import FileBrowser from "../file-browser/FileBrowser";
+import { EditorState } from "../editor/Editor";
 
 interface SidebarProps {
     dir: string,
@@ -21,4 +21,9 @@ export default function Sidebar(props: SidebarProps) {
             }
         </div>
     );
+}
+
+export function toggleSidebar(state: EditorState) {
+    const { sidebarOpen, setSidebarOpen } = state;
+    setSidebarOpen(!sidebarOpen);
 }

@@ -1,38 +1,24 @@
 import { save, ask } from '@tauri-apps/plugin-dialog';
 import { readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';
 import { EditorState } from './Editor';
-import { render } from './plugins';
-
-export async function tryRender(state: EditorState){
-    const { rendered, setRendered, setOldRendered, error, setError } = state;
-    try {
-        setRendered(await render(state));
-        if(!error) setOldRendered(rendered);
-        state.boundaryRef.current?.reset();
-        setError('');
-        // console.log("frontmatter", frontmatter)
-    } catch(error: any) {
-        console.log(error);
-        setError(error);
-    }
-}
+import { invoke } from '@/functions';
 
 export function saveFile(state: EditorState) {
-    const { dir, filename, content, setUnsaved } = state;
+    const { filename, content, setUnsaved } = state;
     if(!filename) {
         return saveFileAs(state);
     }
-    console.log('saving', dir + '/' + filename);
-    tryRender(state);
-    writeTextFile(dir + '/' + filename, content, {})
+    console.log('saving', filename);
+    invoke('tryRender', content);
+    writeTextFile(filename, content, {})
     .then(() => setUnsaved(false));
 }
 
 export function saveFileAs(state: EditorState) {
-    const { dir, content, setUnsaved, setFilename } = state;
+    const { filename, content, setUnsaved, setFilename } = state;
     save({
         filters: [ { name: 'Markdown', extensions: ['mdx', 'md'] } ],
-        defaultPath: dir,
+        defaultPath: filename?.substring(0, filename?.lastIndexOf('/')),
     })
     .then(path => {
         if (path) {
@@ -40,40 +26,39 @@ export function saveFileAs(state: EditorState) {
             console.log("file saved");
             setUnsaved(false);
             setFilename(path);
-            tryRender(state);
+            invoke('tryRender', content);
         }
     })
     .catch(err => console.log(err))
 }
 
 export async function openFile(state: EditorState, name: string) {
-    const { setContent, unsaved, setOldRendered, setFilename, setUnsaved, setError, dir } = state;
+    const { setContent, unsaved, setFilename, setUnsaved } = state;
     if (unsaved && !await discardChanges(state)) {
         return;
     }
-    readTextFile(dir + '/' + name).then(content => {
+    readTextFile(name).then(content => {
         setContent(content);
         setFilename(name);
         setUnsaved(false);
-        setOldRendered('');
-        setError('');
-        tryRender({...state, rendered: '', filename: name, content });
+        
+        invoke('tryRender', content);
     });
 }
 
 export async function newFile(state: EditorState) {
-    const { setContent, setFilename, setRendered, unsaved, setUnsaved} = state;
+    const { setContent, setFilename, unsaved, setUnsaved} = state;
     if (unsaved && !await discardChanges(state)) {
         return;
     }
     setFilename(undefined);
     setContent('');
     setUnsaved(true);
-    setRendered('');
+    invoke('tryRender', '');
 }
 
 export async function discardChanges(state: EditorState) {
-    const { setContent, setUnsaved, setRendered, filename } = state;
+    const { setContent, setUnsaved, filename } = state;
 
     const confirmation = await ask(
         'Are you sure?',
@@ -86,21 +71,13 @@ export async function discardChanges(state: EditorState) {
         .then(content => {
             setContent(content);
             setUnsaved(false);
-            tryRender({...state, content});
+            invoke('tryRender', content);
         })
     } else {
         setContent('');
         setUnsaved(false);
-        setRendered('');
+        invoke('tryRender', '');
     }
     return true;
 }
 
-export function toggleSidebar(state: EditorState) {
-    const { sidebarOpen, setSidebarOpen } = state;
-    setSidebarOpen(!sidebarOpen);
-}
-
-export function printFile(_state: EditorState) {
-    window.print();
-}

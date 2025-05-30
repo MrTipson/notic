@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React from "react";
-import { type StateSetter } from "./Editor";
+import { type StateSetter } from "./plugins/editor/Editor";
 
 interface ErrorBoundaryProps {
     setError: StateSetter<string>

@@ -1,13 +1,11 @@
 import { DirEntry, readDir } from '@tauri-apps/plugin-fs';
-import { KeyboardEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { invoke } from './functions';
-import { EditorState } from './Editor';
+import { KeyboardEvent, useCallback, useMemo, useState } from 'react';
+import { invoke } from '@/functions';
+import { StateSetter } from '@/utils';
+import { open } from '@tauri-apps/plugin-dialog';
+import { wrap } from '@/hooks/wrappedState';
+import { PluginProps } from '@/plugins';
 
-interface FileBrowserProps {
-    dir: string,
-    filename: EditorState['filename'],
-    setHandler: EditorState['setSidebarEventHandler'],
-}
 interface FileEntry {
     name: string,
     path: string,
@@ -16,23 +14,31 @@ interface FileEntry {
     parent: FileEntry | null,
     childIndex: number,
 }
+const nullEntry: FileEntry = {
+    name: 'nullEntry',
+    path: '',
+    children: null,
+    parent: null,
+    childIndex: -1
+}
 function compareDirEntry(a: DirEntry, b: DirEntry) {
     return a.isDirectory === b.isDirectory ? a.name.localeCompare(b.name) : a.isDirectory ? -1 : 1;
 }
-function readFolder(dir: string, path: string, done: ()=>void) {
-    const fullpath = dir + path;
-    const entry: FileEntry = { name: 'root', path, parent: null, childIndex: -1, children: () => {
-        readDir(fullpath)
+function readFolder(dir: string, done: ()=>void) {
+    console.log("readFolder", dir);
+    const entry: FileEntry = { name: 'root', path: dir, parent: null, childIndex: -1, children: () => {
+        readDir(dir)
         .then(fs => {
             const sorted = fs.sort(compareDirEntry);
             const children = sorted.map<FileEntry>((f,i) => {
                 if (f.isDirectory) {
-                    const e = readFolder(fullpath, '/' + f.name, done);
+                    const e = readFolder(dir + '/' + f.name, done);
+                    e.name = f.name;
                     e.parent = entry;
                     e.childIndex = i;
                     return e;
                 } else {
-                    return { name: f.name, path: `${path}/${f.name}`, children: null, parent: entry, childIndex: i };
+                    return { name: f.name, path: `${dir}/${f.name}`, children: null, parent: entry, childIndex: i };
                 }
             });
             entry.children = () => children;
@@ -65,11 +71,28 @@ function renderChildren(
     });
 }
 
-export default function FileBrowser(props: FileBrowserProps) {
-    const { dir, setHandler } = props;
+function openDir(state: FileBrowserState) {
+  const { setDir } = state;
+
+  open({ multiple: false, directory: true, recursive: true, })
+    .then((x: string | null) => x && setDir(x));
+}
+
+export type FileBrowserState = {
+    dir: string | undefined, setDir: StateSetter<FileBrowserState['dir']>
+}
+export default function FileBrowser(props: PluginProps) {
+    const { registerAction } = props;
+    const [dir, setDir] = useState<string>();
     const [_refresh, _setRefresh] = useState(false);
     const [highlighted, setHighlighted] = useState<FileEntry>();
     const refresh = useMemo(() => () => _setRefresh(!_refresh), [_refresh, _setRefresh]);
+
+    const fileBrowserState = wrap<FileBrowserState>({
+        dir, setDir
+    });
+
+    registerAction("openDirectory", fileBrowserState, openDir);
 
     const handleInput = useCallback((event: KeyboardEvent) => {
         if (!highlighted) {
@@ -113,7 +136,7 @@ export default function FileBrowser(props: FileBrowserProps) {
                 if (index < siblings.length - 1) {
                     setHighlighted(siblings[index + 1]);
                 }
-                break
+                break;
             }
             case 'ArrowLeft': {
                 if (highlighted.children && highlighted.isExpanded) {
@@ -143,8 +166,6 @@ export default function FileBrowser(props: FileBrowserProps) {
         }
     }, [highlighted, refresh]);
 
-    useEffect(() => setHandler(() => handleInput), [handleInput, setHandler]);
-
     const onFile = useCallback((entry: FileEntry) => {
         invoke('openFile', entry.path);
         setHighlighted(entry);
@@ -153,11 +174,19 @@ export default function FileBrowser(props: FileBrowserProps) {
         entry.isExpanded = !entry.isExpanded;
         refresh();
     }, [refresh]);
-    
-    const files = useMemo(() => readFolder(dir, '', refresh), [dir]);
 
+    
+    const files = useMemo(() => dir ? readFolder(dir, refresh) : nullEntry, [dir]);
+    if (!dir) {
+        return (
+            <div>
+                Open folder to start browsing
+            </div>
+        );
+    }
+    
     return (
-        <div className='text-c1 select-none pr-2'>
+        <div className='text-c1 select-none pr-2' onKeyDown={handleInput} tabIndex={props?.tabIndex}>
             <div className="text-sm text-c2 pl-2">{dir.split("/").pop()}</div>
             {files.children ? renderChildren(files.children(), onFile, onToggleExpand, highlighted) : "internal error"}
         </div>
