@@ -186,7 +186,8 @@ export default function FileBrowser(props: PluginProps) {
     }
     
     return (
-        <div className='text-c1 select-none pr-2' onKeyDown={handleInput} tabIndex={props?.tabIndex}>
+        <div className='h-full w-full focus:inset-shadow-md rounded-md inset-shadow-c1-accent text-c1 select-none pr-2 outline-none overflow-auto'
+            onKeyDown={handleInput} tabIndex={props?.tabIndex}>
             <div className="text-sm text-c2 pl-2">{dir.split("/").pop()}</div>
             {files.children ? renderChildren(files.children(), onFile, onToggleExpand, highlighted) : "internal error"}
         </div>
