@@ -41,7 +41,7 @@ export default function Editor(props: PluginProps) {
     registerAction('discard', editorState, discardChanges);
 
     return (
-        <div className='w-full h-full focus:inset-shadow-md rounded-md inset-shadow-c1-accent outline-none bg-c2-fill text-c2 caret-c1 px-2 print:hidden'
+        <div className='w-full h-full focus:border-c3 focus-within:border-c1 border-transparent border outline-none bg-c2-fill text-c2 caret-c1 px-2 print:hidden'
             tabIndex={props.tabIndex} onKeyDown={onKeyDown}>
                 <textarea className='resize-none font-mono outline-none w-full h-full'
                     onChange={onChange} value={content} tabIndex={-1}/>

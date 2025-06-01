@@ -51,7 +51,7 @@ export default function PreviewPane(props: PluginProps) {
     registerAction('printFile', previewState, printFile);
 
     return (
-        <div className='md w-full h-full relative focus-within:inset-shadow-md rounded-md inset-shadow-c1-accent pr-2 print:inset-shadow-transparent print:w-full'>
+        <div className='md w-full h-full relative focus-within:border-c3 border border-transparent pr-2 print:border-transparent print:w-full'>
             <div className='overflow-auto h-full w-full pb-5 outline-none' tabIndex={3}>
                 {<ErrorBoundary children={rendered} old={oldRendered} ref={boundaryRef} setError={setError}/>}
             </div>
