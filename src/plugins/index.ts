@@ -13,8 +13,10 @@ function constructOptions(imported: NoticPlugin[]): Readonly<EvaluateOptions> {
 }
 
 export interface PluginProps {
+    id: string,
     registerAction: typeof funregHelper,
     tabIndex?: number,
+    components: Map<string, PluginComponent>,
 }
 export type PluginComponent = JSXElementConstructor<PluginProps>
 export type PluginApi = ReturnType<typeof pluginApi>

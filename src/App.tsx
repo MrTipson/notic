@@ -7,34 +7,31 @@ import { importPlugins, NoticPluginWithId, PluginComponent } from "@/plugins/";
 type AppState = {
   plugins: string[],       setPlugins: StateSetter<AppState['plugins']>,
   components: Map<string, PluginComponent>, setComponents: StateSetter<AppState['components']>,
+  layout: string,          setLayout: StateSetter<AppState['layout']>,
 }
 export default function App() {
-  const [plugins, setPlugins] = useState<AppState['plugins']>([]);
+  const [layout, setLayout] = useState('app-layout#default');
+  const [plugins, setPlugins] = useState<AppState['plugins']>(['gfm', 'frontmatter', 'layout', 'placeholders', 'editor', 'file-browser', 'preview', 'app-layout']);
   const [components, setComponents] = useState<AppState['components']>(new Map());
   // console.log(dir);
   const _appState = wrap<AppState>({
+    layout, setLayout,
     plugins, setPlugins,
     components, setComponents,
   });
 
-  useEffect(() => setPlugins(['gfm', 'layout', 'placeholders', 'editor', 'file-browser', 'preview']), [])
   useEffect(() => {
     importPlugins(plugins).then(({ imported }) => {
       setComponents(getComponents(imported))
     });
   }, [plugins]);
 
-  const sadman = (props: any) => ':('; 
-  const FileBrowser = components.get('file-browser') || sadman;
-  const Editor = components.get('editor') || sadman;
-  const PreviewPane = components.get('preview') || sadman;
-
+  const [layoutName, layoutId] = layout.split('#');
+  const LayoutComponent = components.get(layoutName) || (() => <p>Layout component {layoutName} not found</p>);
   return (
     <div className="bg-c1-fill w-full h-full">
       <main className="w-full h-full flex">
-          <FileBrowser registerAction={funregHelper} tabIndex={1}/>          
-          <Editor registerAction={funregHelper} tabIndex={2}/>
-          <PreviewPane registerAction={funregHelper} tabIndex={3}/>
+        <LayoutComponent id={layoutId} components={components} registerAction={funregHelper}/>
       </main>
     </div>
   );
