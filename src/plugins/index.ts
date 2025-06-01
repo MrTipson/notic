@@ -18,11 +18,17 @@ export interface PluginProps {
 }
 export type PluginComponent = JSXElementConstructor<PluginProps>
 export type PluginApi = ReturnType<typeof pluginApi>
+type ApplyFn = (args: {
+    api: PluginApi,
+    filename: string | undefined,
+    props: {[key: string]: unknown}
+}) => Promise<void>;
 export type NoticPlugin = {
     title: string,
     description: string,
     dependencies?: readonly string[],
     options?: Partial<EvaluateOptions>,
+    apply?: ApplyFn,
     uiComponents?: { [index: string]: PluginComponent },
 };
 
@@ -62,11 +68,14 @@ export async function render(filename: string | undefined, content: string) {
     const { imported, options } = loaded;
     const { default: MDXContent, ...props } = await evaluate(content, options);
     
-    const api = pluginApi(options);
+    const args = {
+        filename, props,
+        api: pluginApi(options),
+    };
     for (let i = 0; i < imported.length; i++) {
         const plugin = imported[i];
         if (plugin.apply) {
-            await plugin.apply(api, props);
+            await plugin.apply(args);
         }
     }
     console.log(props);

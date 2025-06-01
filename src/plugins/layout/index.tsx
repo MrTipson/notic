@@ -9,7 +9,7 @@ That file can optionally specify the additional frontmatter fields it requires t
     dependencies: Object.freeze(['frontmatter']),
 };
 
-export const apply: NoticPlugin['apply'] = async (api, props) => {
+export const apply: NoticPlugin['apply'] = async ({ api, props }) => {
     
     const { frontmatter } = props;
     if (!frontmatter?.hasOwnProperty('layout')) {
