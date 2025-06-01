@@ -9,7 +9,7 @@ export function saveFile(state: EditorState) {
         return saveFileAs(state);
     }
     console.log('saving', filename);
-    invoke('tryRender', content);
+    invoke('tryRender', filename, content);
     writeTextFile(filename, content, {})
     .then(() => setUnsaved(false));
 }
@@ -26,7 +26,7 @@ export function saveFileAs(state: EditorState) {
             console.log("file saved");
             setUnsaved(false);
             setFilename(path);
-            invoke('tryRender', content);
+            invoke('tryRender', path, content);
         }
     })
     .catch(err => console.log(err))
@@ -42,7 +42,7 @@ export async function openFile(state: EditorState, name: string) {
         setFilename(name);
         setUnsaved(false);
         
-        invoke('tryRender', content);
+        invoke('tryRender', name, content);
     });
 }
 
@@ -54,7 +54,7 @@ export async function newFile(state: EditorState) {
     setFilename(undefined);
     setContent('');
     setUnsaved(true);
-    invoke('tryRender', '');
+    invoke('tryRender', undefined, '');
 }
 
 export async function discardChanges(state: EditorState) {
@@ -71,12 +71,12 @@ export async function discardChanges(state: EditorState) {
         .then(content => {
             setContent(content);
             setUnsaved(false);
-            invoke('tryRender', content);
+            invoke('tryRender', filename, content);
         })
     } else {
         setContent('');
         setUnsaved(false);
-        invoke('tryRender', '');
+        invoke('tryRender', undefined, '');
     }
     return true;
 }

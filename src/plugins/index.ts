@@ -57,7 +57,7 @@ export async function importPlugins(plugins: string[]) {
     return loaded;
 }
 
-export async function render(content: string) {
+export async function render(filename: string | undefined, content: string) {
     // App.tsx makes sure plugins get reimported
     const { imported, options } = loaded;
     const { default: MDXContent, ...props } = await evaluate(content, options);
