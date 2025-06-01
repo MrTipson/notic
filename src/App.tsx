@@ -21,8 +21,8 @@ export default function App() {
   useEffect(() => {
     importPlugins(plugins).then(({ imported }) => {
       setComponents(getComponents(imported))
-    })
-  }, [plugins])
+    });
+  }, [plugins]);
 
   const sadman = (props: any) => ':('; 
   const FileBrowser = components.get('file-browser') || sadman;
@@ -40,10 +40,15 @@ export default function App() {
   );
 }
 
-type PluginWithComponent = NoticPluginWithId & { component: PluginComponent }
+type PluginWithComponents = NoticPluginWithId & Required<Pick<NoticPluginWithId, 'uiComponents'>>
 function getComponents(imported: NoticPluginWithId[]) {
-  return new Map(imported
-    .filter((x): x is PluginWithComponent => !!x.component)
-    .map(x => [x.id, x.component])
-  );
+  return new Map<string, PluginComponent>(Array.prototype.concat(...
+    imported 
+    .filter((x): x is PluginWithComponents => !!x.uiComponents)
+    .map(x => 
+      Object.entries(x.uiComponents).map(([k, v]) => 
+        [k === 'default' ? x.id : `${x.id}.${k}`, v]
+      )
+    )
+  ));
 }

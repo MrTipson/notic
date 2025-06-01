@@ -1,8 +1,8 @@
 import { NoticPlugin } from "@/plugins";
 import Editor from "./Editor";
 
-export const { title, description, apply, component }: NoticPlugin = {
+export const { title, description, apply, uiComponents }: NoticPlugin = {
     title: 'Editor',
     description: 'This plugin provides an editor component',
-    component: Editor,
+    uiComponents: { default: Editor },
 };

@@ -23,8 +23,7 @@ export type NoticPlugin = {
     description: string,
     dependencies?: readonly string[],
     options?: Partial<EvaluateOptions>,
-    apply?: (api: PluginApi, props: {[key: string]: unknown}) => Promise<void>,
-    component?: PluginComponent,
+    uiComponents?: { [index: string]: PluginComponent },
 };
 
 export type NoticPluginWithId = NoticPlugin & { id: string }
