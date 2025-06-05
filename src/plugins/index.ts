@@ -4,6 +4,7 @@ import { EvaluateOptions } from "@mdx-js/mdx";
 import { readTextFile } from '@tauri-apps/plugin-fs';
 import { JSXElementConstructor } from 'react';
 import { funregHelper } from '@/utils';
+import { createPortal } from 'react-dom';
 
 function constructOptions(imported: NoticPlugin[]): Readonly<EvaluateOptions> {
     return {
@@ -16,7 +17,15 @@ export interface PluginProps {
     id: string,
     registerAction: typeof funregHelper,
     tabIndex?: number,
+    container: HTMLDivElement | null,
     components: Map<string, PluginComponent>,
+}
+type PluginWrapperProps = {
+    children: any,
+    container: HTMLDivElement | null,
+}
+export function PluginWrapper({ children, container }: PluginWrapperProps) {
+    return container ? createPortal(children, container) : children;
 }
 export type PluginComponent = JSXElementConstructor<PluginProps>
 export type PluginApi = ReturnType<typeof pluginApi>
@@ -32,6 +41,7 @@ export type NoticPlugin = {
     options?: Partial<EvaluateOptions>,
     apply?: ApplyFn,
     uiComponents?: { [index: string]: PluginComponent },
+    mdxComponents?: { [index: string]: React.ReactElement },
 };
 
 export type NoticPluginWithId = NoticPlugin & { id: string }

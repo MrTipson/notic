@@ -4,7 +4,7 @@ import { getCurrentWindow } from '@tauri-apps/api/window';
 import { wrap } from '@/hooks/wrappedState.ts';
 import { StateSetter } from '@/utils.ts';
 import { saveFile, saveFileAs, openFile, newFile, discardChanges } from './EditorActions.ts';
-import { PluginProps } from '@/plugins';
+import { PluginProps, PluginWrapper } from '@/plugins';
 
 
 export type EditorState = {
@@ -13,7 +13,7 @@ export type EditorState = {
     content: string,                setContent: StateSetter<EditorState['content']>,
 }
 export default function Editor(props: PluginProps) {
-    const { registerAction } = props;
+    const { registerAction, container } = props;
     const [filename, setFilename] = useState<string>();
     const [unsaved, setUnsaved] = useState(false);
     const [content, setContent] = useState('');
@@ -41,11 +41,13 @@ export default function Editor(props: PluginProps) {
     registerAction('discard', editorState, discardChanges);
 
     return (
-        <div className='w-full h-full focus:border-c3 focus-within:border-c1 border-transparent border outline-none bg-c2-fill text-c2 caret-c1 px-2 print:hidden'
-            tabIndex={props.tabIndex} onKeyDown={onKeyDown}>
-                <textarea className='resize-none font-mono outline-none w-full h-full'
-                    onChange={onChange} value={content} tabIndex={-1}/>
-        </div>
+        <PluginWrapper container={container}>
+            <div className='w-full h-full focus:border-c3 focus-within:border-c1 border-transparent border outline-none bg-c2-fill text-c2 caret-c1 px-2 print:hidden'
+                tabIndex={props.tabIndex} onKeyDown={onKeyDown}>
+                    <textarea className='resize-none font-mono outline-none w-full h-full'
+                        onChange={onChange} value={content} tabIndex={-1}/>
+            </div>
+        </PluginWrapper>
     );
 }
 

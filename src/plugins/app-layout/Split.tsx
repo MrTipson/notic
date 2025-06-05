@@ -1,14 +1,30 @@
 import { StateSetter } from "@/utils";
 import { MouseEventHandler, ReactNode, useCallback, useRef, useState } from "react";
+import { SplitPane } from "./config";
 
-interface SplitProps {
-    type: 'vertical' | 'horizontal',
+type SplitProps = {
     a: ReactNode,
     b: ReactNode,
+    config: SplitPane,
 }
+
+let id = 0;
+export function generateSplitId() {
+    return 'split' + id++;
+}
+
 export function Split(props: SplitProps) {
-    const { type, a, b } = props;
-    const [ratio, setRatio] = useState(0.4);
+    const { a, b, config } = props;
+    const type = config.direction;
+
+    const [ratio, _setRatio] = useState(config.ratio);
+    const setRatio = useCallback<typeof _setRatio>((update) => 
+        _setRatio(current => {
+            const nextState = typeof update === 'function' ? update(current) : update
+            config.ratio = nextState;
+            return nextState;
+        })
+    , [_setRatio])
     const [drag, setDrag] = useState(false);
     const me = useRef<HTMLDivElement>(null);
 
@@ -47,7 +63,7 @@ export function Split(props: SplitProps) {
 interface DividerProps {
     drag: boolean,
     setDrag: StateSetter<boolean>,
-    type: SplitProps['type'],
+    type: SplitPane['direction'],
 }
 function Divider(props: DividerProps) {
     const { type, drag, setDrag } = props;

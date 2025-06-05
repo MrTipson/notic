@@ -4,7 +4,7 @@ import { invoke } from '@/functions';
 import { StateSetter } from '@/utils';
 import { open } from '@tauri-apps/plugin-dialog';
 import { wrap } from '@/hooks/wrappedState';
-import { PluginProps } from '@/plugins';
+import { PluginProps, PluginWrapper } from '@/plugins';
 
 interface FileEntry {
     name: string,
@@ -82,7 +82,7 @@ export type FileBrowserState = {
     dir: string | undefined, setDir: StateSetter<FileBrowserState['dir']>
 }
 export default function FileBrowser(props: PluginProps) {
-    const { registerAction } = props;
+    const { registerAction, container } = props;
     const [dir, setDir] = useState<string>();
     const [_refresh, _setRefresh] = useState(false);
     const [highlighted, setHighlighted] = useState<FileEntry>();
@@ -179,17 +179,21 @@ export default function FileBrowser(props: PluginProps) {
     const files = useMemo(() => dir ? readFolder(dir, refresh) : nullEntry, [dir]);
     if (!dir) {
         return (
-            <div>
-                Open folder to start browsing
-            </div>
+            <PluginWrapper container={container}>
+                <div>
+                    Open folder to start browsing
+                </div>
+            </PluginWrapper>
         );
     }
     
     return (
-        <div className='h-full w-full focus:border-c3 border border-transparent text-c1 select-none pr-2 outline-none overflow-auto'
-            onKeyDown={handleInput} tabIndex={props?.tabIndex}>
-            <div className="text-sm text-c2 pl-2">{dir.split("/").pop()}</div>
-            {files.children ? renderChildren(files.children(), onFile, onToggleExpand, highlighted) : "internal error"}
-        </div>
+        <PluginWrapper container={container}>
+            <div className='h-full w-full focus:border-c3 border border-transparent text-c1 select-none pr-2 outline-none overflow-auto'
+                onKeyDown={handleInput} tabIndex={props?.tabIndex}>
+                <div className="text-sm text-c2 pl-2">{dir.split("/").pop()}</div>
+                {files.children ? renderChildren(files.children(), onFile, onToggleExpand, highlighted) : "internal error"}
+            </div>
+        </PluginWrapper>
     );
 }

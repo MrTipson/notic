@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import ErrorBoundary from "./ErrorBoundary";
 import { StateSetter } from "@/utils";
-import { PluginProps, render } from "@/plugins";
+import { PluginProps, PluginWrapper, render } from "@/plugins";
 import { wrap } from "@/hooks/wrappedState";
 
 
@@ -33,7 +33,7 @@ export type PreviewState = {
 }
 
 export default function PreviewPane(props: PluginProps) {
-    const { registerAction } = props;
+    const { registerAction, container } = props;
     const [rendered, setRendered] = useState<any>();
     const [oldRendered, setOldRendered] = useState<any>();
     const [error, setError] = useState('');
@@ -51,11 +51,13 @@ export default function PreviewPane(props: PluginProps) {
     registerAction('printFile', previewState, printFile);
 
     return (
-        <div className='md w-full h-full relative focus-within:border-c3 border border-transparent pr-2 print:border-transparent print:w-full'>
-            <div className='overflow-auto h-full w-full pb-5 outline-none' tabIndex={3}>
-                {<ErrorBoundary children={rendered} old={oldRendered} ref={boundaryRef} setError={setError}/>}
+        <PluginWrapper container={container}>
+            <div className='md w-full h-full relative focus-within:border-c3 border border-transparent pr-2 print:border-transparent print:w-full'>
+                <div className='overflow-auto h-full w-full pb-5 outline-none' tabIndex={3}>
+                    {<ErrorBoundary children={rendered} old={oldRendered} ref={boundaryRef} setError={setError}/>}
+                </div>
             </div>
-        </div>
+        </PluginWrapper>
     );
 }
 
