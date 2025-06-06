@@ -13,7 +13,7 @@ export default function Layout(props: PluginProps) {
         const c = containerRef.current;
         if (!c) return undefined;
         return { left: c.clientLeft, top: c.clientTop, width: c.clientWidth, height: c.clientHeight }
-    }, [containerRef.current]);
+    }, [containerRef.current, window.innerWidth, window.innerHeight]);
 
     const [floating, setFloating] = useState<ReactNode>();
 
@@ -29,7 +29,7 @@ export default function Layout(props: PluginProps) {
         setDryRunOverlay(putDown(layoutConfigRef, { ...containerRect, x: event.clientX, y: event.clientY }, floating, true))
     }, [floating]);
     const onMouseDown = useCallback<MouseEventHandler>(event => {
-        if (event.ctrlKey) {
+        if (event.ctrlKey && event.button === 0) {
             if (!containerRect) return;
             const element = pickUp(layoutConfigRef, { ...containerRect, x: event.clientX, y: event.clientY });
             console.log('picking up', element);
