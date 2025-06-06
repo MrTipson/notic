@@ -75,10 +75,17 @@ function Divider(props: DividerProps) {
         }
     }, [setDrag]);
 
-    let className = 'shrink-0 absolute p-4 from-transparent from-25% hover:via-c1-accent/50 to-75% to-transparent cursor-grab ' +
-        (type === 'horizontal' ? 'h-full w-2 left-0 translate-x-[-50%] top-0 bg-gradient-to-r' : 'w-full h-2 top-0 translate-y-[-50%] bg-gradient-to-b');
+    let className = 'shrink-0 absolute p-4 from-transparent hover:via-c1-accent/50 to-transparent';
+    if (type === 'horizontal') {
+        className += ' h-full w-2 left-0 translate-x-[-50%] top-0 bg-gradient-to-r cursor-ew-resize';
+    } else {
+        className += ' w-full h-2 top-0 translate-y-[-50%] bg-gradient-to-b cursor-ns-resize';
+    }
     if (drag) {
-        className += ' via-c1-accent/50 cursor-grabbing';
+        className += ' via-c1-accent/50 from-45% to-55%';
+        className += type === 'horizontal' ? ' w-100' : ' h-100';
+    } else {
+        className += ' from-25% to-75%';
     }
     return <div {...{className, onMouseDown}}/>;
 }
