@@ -2,6 +2,7 @@ import { save, ask } from '@tauri-apps/plugin-dialog';
 import { readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';
 import { EditorState } from './Editor';
 import { invoke } from '@/functions';
+import { clearCache } from '@/plugins';
 
 export function saveFile(state: EditorState) {
     const { filename, content, setUnsaved } = state;
@@ -9,9 +10,10 @@ export function saveFile(state: EditorState) {
         return saveFileAs(state);
     }
     console.log('saving', filename);
+    writeTextFile(filename, content, {}).then(() => {
+        setUnsaved(false);
     invoke('tryRender', filename, content);
-    writeTextFile(filename, content, {})
-    .then(() => setUnsaved(false));
+    });
 }
 
 export function saveFileAs(state: EditorState) {
@@ -22,11 +24,12 @@ export function saveFileAs(state: EditorState) {
     })
     .then(path => {
         if (path) {
-            writeTextFile(path, content, {});
+            writeTextFile(path, content, {}).then(() => {
             console.log("file saved");
             setUnsaved(false);
             setFilename(path);
             invoke('tryRender', path, content);
+            });
         }
     })
     .catch(err => console.log(err))
@@ -37,11 +40,11 @@ export async function openFile(state: EditorState, name: string) {
     if (unsaved && !await discardChanges(state)) {
         return;
     }
-    readTextFile(name).then(content => {
+    readTextFile(name).then(async content => {
         setContent(content);
         setFilename(name);
         setUnsaved(false);
-        
+        await clearCache(name);
         invoke('tryRender', name, content);
     });
 }

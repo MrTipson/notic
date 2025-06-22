@@ -4,7 +4,7 @@ import React, { JSXElementConstructor } from 'react';
 import { funregHelper } from '@/utils';
 import { createPortal } from 'react-dom';
 import { compile as compileMdx, evaluate as evaluateMdx } from '@mdx-js/mdx';
-import { exists, readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';
+import { readTextFile, remove, stat, writeTextFile } from '@tauri-apps/plugin-fs';
 import { appCacheDir, normalize } from '@tauri-apps/api/path';
 import { convertFileSrc, invoke } from '@tauri-apps/api/core';
 
@@ -24,14 +24,16 @@ export function remarkPatchImports() {
             if (decl.type === 'ImportDeclaration') {
                 const url: string = decl.source.value;
                 if (url.startsWith('./') || url.startsWith('../')) {
+                    if (workdir === undefined) {
+                        throw Error('Relative imports in unsaved file');
+                    }
                     const path = await normalize(workdir + url);
                     if (path in queue) {
                         remarkPatchImportsOptions.compileQueue = [];
                         throw Error('Patch imports: infinite recursion detected');
                     }
                     remarkPatchImportsOptions.compileQueue.push(path);
-
-                    decl.source.raw = `"${convertFileSrc(await compile(path))}"`;
+                    decl.source.raw = `"${await compile(path)}"`;
                 } else if (url.startsWith('/')) {
                     const path = await normalize(url);
                     if (path in queue) {
@@ -39,7 +41,7 @@ export function remarkPatchImports() {
                         throw Error('Patch imports: infinite recursion detected');
                     }
                     remarkPatchImportsOptions.compileQueue.push(path);
-                    decl.source.raw = `"${convertFileSrc(await compile(path))}"`;
+                    decl.source.raw = `"${await compile(path)}"`;
                 }
             }
         }
@@ -148,15 +150,22 @@ export async function render(filename: string | undefined, content: string) {
             await plugin.apply(args);
         }
     }
-    console.log(props);
     return MDXContent(props);
+}
+
+export async function clearCache(filename: string) {
+    const sha = await invoke('sha256', { content: filename });
+    await remove(`${await appCacheDir()}/${sha}.js`).catch(_ => { });
 }
 
 async function compile(filename: string): Promise<string> {
     const sha = await invoke('sha256', { content: filename });
     const path = `${await appCacheDir()}/${sha}.js`;
 
-    if (!await exists(path) || true) {
+    const sourceInfo = await stat(filename);
+    const cacheInfo = await stat(path).catch(_ => undefined);
+
+    if (!cacheInfo || Number(cacheInfo.mtime) < Number(sourceInfo.mtime)) {
         const content = await readTextFile(filename);
         remarkPatchImportsOptions.compileQueue.push(filename);
         const result = await compileMdx(content, { ...loaded.options, jsx: false });
@@ -164,10 +173,16 @@ async function compile(filename: string): Promise<string> {
 
         await writeTextFile(path, header + text.substring(text.indexOf("\n")));
     }
-    return path;
+    let outpath = `${convertFileSrc(path)}?m=${sourceInfo.mtime}`;
+    // If there is no disk cache (i.e. someone cleared it),
+    // we add something that will force 'import' to reevaluate
+    if (!cacheInfo) {
+        outpath += `&c=${Number(new Date())}`;
+    }
+    return outpath;
 }
 
 async function loadMdx(filename: string): ReturnType<typeof evaluateMdx> {
-    return import(/* @vite-ignore */ convertFileSrc(await compile(filename)))
+    return import(/* @vite-ignore */ await compile(filename))
         .catch(reason => { console.log("Dynamic import error", reason) })
 }

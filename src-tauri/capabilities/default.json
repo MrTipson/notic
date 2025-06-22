@@ -11,6 +11,8 @@
     "dialog:default",
     "fs:default",
     "fs:allow-write-text-file",
+    "fs:allow-appcache-meta",
+    "fs:allow-appcache-write",
     "fs:scope-appcache-recursive",
     "core:window:allow-set-title"
   ]
