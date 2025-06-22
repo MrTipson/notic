@@ -8,7 +8,7 @@ import path from 'node:path';
 const host = process.env.TAURI_DEV_HOST;
 
 // https://vitejs.dev/config/
-export default defineConfig(async () => ({
+export default defineConfig({
   plugins: [
     { enforce: 'pre', ...mdx() },
     tailwindcss(),
@@ -16,6 +16,7 @@ export default defineConfig(async () => ({
   ],
   resolve: {
     alias: {
+      // @ts-ignore
       '@': path.resolve(__dirname, './src'),
     },
   },
@@ -30,14 +31,42 @@ export default defineConfig(async () => ({
     host: host || false,
     hmr: host
       ? {
-          protocol: "ws",
-          host,
-          port: 1421,
-        }
+        protocol: "ws",
+        host,
+        port: 1421,
+      }
       : undefined,
     watch: {
       // 3. tell vite to ignore watching `src-tauri`
       ignored: ["**/src-tauri/**"],
     },
   },
-}));
+  build: {
+    minify: false,
+    terserOptions: {
+      compress: false,
+      mangle: false,
+    },
+    rollupOptions: {
+      output: {
+        manualChunks,
+        assetFileNames: "assets/[name].[ext]", // Output assets (e.g., images, SVGs) to the assets folder
+        entryFileNames: "assets/[name].js", // Output entry files (e.g., JavaScript) to the root directory
+        chunkFileNames: "assets/[name].js", // Output dynamic imports (chunks) to the assets folder
+      },
+    },
+  },
+});
+
+function manualChunks(id) {
+  console.log(id);
+  if (id.includes("notic/src/dummy")) {
+    return "dummy";
+  } else if (id.includes("notic/src")) {
+    return "notic";
+  } else if (id.includes("node_modules")) {
+    if (id.includes("react")) return "react";
+    else return "modules"
+  }
+  return "chunk";
+}

@@ -18,7 +18,18 @@
       }
     ],
     "security": {
-      "csp": null
+      "assetProtocol": {
+        "enable": true,
+        "scope": [
+          "$APPCACHE/*",
+          "/node_modules/*"
+        ]
+      },
+      "csp": {
+        "default-src": "'self' ipc: 'http://ipc.localhost'",
+        "script-src": "'self' https: asset: 'http://asset.localhost'",
+        "connect-src": "'self' https: ipc: 'http://ipc.localhost"
+      }
     }
   },
   "bundle": {

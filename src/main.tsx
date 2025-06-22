@@ -4,6 +4,11 @@ import App from "./App";
 import { setupMenu } from "./menu";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { invoke } from "./functions";
+import { BaseDirectory, exists, mkdir } from "@tauri-apps/plugin-fs";
+
+if (!exists('', { baseDir: BaseDirectory.AppCache })) {
+  mkdir('', { baseDir: BaseDirectory.AppCache });
+}
 
 setupMenu();
 
@@ -20,10 +25,10 @@ window.addEventListener('click', async (e) => {
   if (t && 'tagName' in t && t.tagName === 'A') { // alter behaviour of anchor tags
 
     const a = t as HTMLAnchorElement;
-    
+
     if (a.hash) return; // leave id anchors alone
     e.preventDefault(); // dont change location
-    
+
     if (a.host === 'localhost:1420') { // Relative links
       invoke('openFile', a.pathname)
     } else { // Websites
