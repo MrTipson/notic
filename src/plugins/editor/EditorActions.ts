@@ -12,7 +12,7 @@ export function saveFile(state: EditorState) {
     console.log('saving', filename);
     writeTextFile(filename, content, {}).then(() => {
         setUnsaved(false);
-    invoke('tryRender', filename, content);
+        invoke('tryRender', filename, content);
     });
 }
 
@@ -25,10 +25,10 @@ export function saveFileAs(state: EditorState) {
     .then(path => {
         if (path) {
             writeTextFile(path, content, {}).then(() => {
-            console.log("file saved");
-            setUnsaved(false);
-            setFilename(path);
-            invoke('tryRender', path, content);
+                console.log("file saved");
+                setUnsaved(false);
+                setFilename(path);
+                invoke('tryRender', path, content);
             });
         }
     })

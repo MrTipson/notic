@@ -25,7 +25,6 @@ function compareDirEntry(a: DirEntry, b: DirEntry) {
     return a.isDirectory === b.isDirectory ? a.name.localeCompare(b.name) : a.isDirectory ? -1 : 1;
 }
 function readFolder(dir: string, done: ()=>void) {
-    console.log("readFolder", dir);
     const entry: FileEntry = { name: 'root', path: dir, parent: null, childIndex: -1, children: () => {
         readDir(dir)
         .then(fs => {

@@ -1,7 +1,9 @@
 import { NoticPlugin } from "@/plugins";
-import { z } from 'https://esm.sh/zod';
+// @ts-ignore
+import { z } from 'https://esm.sh/zod@3.25.76';
+// @ts-ignore
 import { generateMock } from 'https://esm.sh/@anatine/zod-mock';
- 
+
 export const { title, description, apply }: NoticPlugin = {
     title: 'Placeholders',
     description: 'This plugin will make sure that the \'children\' and any schema props are set when rendering a file.',

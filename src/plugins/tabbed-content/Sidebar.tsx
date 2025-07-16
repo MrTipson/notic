@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState } from "react";
 import FileBrowser from "../file-browser/FileBrowser";
 import { EditorState } from "../editor/Editor";
@@ -16,8 +17,8 @@ export default function Sidebar(props: SidebarProps) {
         <div className="px-1 py-2">
             {
                 view === 'file'
-                ? (<FileBrowser dir={dir} filename={filename} setHandler={setHandler}/>)
-                : "todo"
+                    ? (<FileBrowser dir={dir} filename={filename} setHandler={setHandler} />)
+                    : "todo"
             }
         </div>
     );

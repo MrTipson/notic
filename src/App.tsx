@@ -5,9 +5,13 @@ import { funregHelper, StateSetter } from "./utils.ts";
 import { importPlugins, NoticPluginWithId, PluginComponent } from "@/plugins/";
 
 type AppState = {
-  plugins: string[],       setPlugins: StateSetter<AppState['plugins']>,
-  components: Map<string, PluginComponent>, setComponents: StateSetter<AppState['components']>,
-  layout: string,          setLayout: StateSetter<AppState['layout']>,
+  plugins: string[],
+  components: Map<string, PluginComponent>,
+  layout: string,
+
+  setPlugins: StateSetter<AppState['plugins']>,
+  setComponents: StateSetter<AppState['components']>,
+  setLayout: StateSetter<AppState['layout']>,
 }
 export default function App() {
   const [layout, setLayout] = useState('app-layout#default');
@@ -19,6 +23,7 @@ export default function App() {
     plugins, setPlugins,
     components, setComponents,
   });
+  _appState
 
   useEffect(() => {
     importPlugins(plugins).then(({ imported }) => {
@@ -31,7 +36,7 @@ export default function App() {
   return (
     <div className="bg-c1-fill w-full h-full">
       <main className="w-full h-full flex">
-        <LayoutComponent id={layoutId} components={components} registerAction={funregHelper}/>
+        <LayoutComponent id={layoutId} components={components} registerAction={funregHelper} />
       </main>
     </div>
   );
@@ -40,12 +45,12 @@ export default function App() {
 type PluginWithComponents = NoticPluginWithId & Required<Pick<NoticPluginWithId, 'uiComponents'>>
 function getComponents(imported: NoticPluginWithId[]) {
   return new Map<string, PluginComponent>(Array.prototype.concat(...
-    imported 
-    .filter((x): x is PluginWithComponents => !!x.uiComponents)
-    .map(x => 
-      Object.entries(x.uiComponents).map(([k, v]) => 
-        [k === 'default' ? x.id : `${x.id}.${k}`, v]
+    imported
+      .filter((x): x is PluginWithComponents => !!x.uiComponents)
+      .map(x =>
+        Object.entries(x.uiComponents).map(([k, v]) =>
+          [k === 'default' ? x.id : `${x.id}.${k}`, v]
+        )
       )
-    )
   ));
 }

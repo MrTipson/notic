@@ -4,7 +4,7 @@ import { ComponentConfig, parseConfig, SimplePane, SplitPane } from "./config";
 import { Split, generateSplitId } from "./Split";
 
 export default function Layout(props: PluginProps) {
-    const [mountedComponents, setMountedComponents] = useState<{[index: string]: ComponentConfig}>({});
+    const [mountedComponents, _setMountedComponents] = useState<{ [index: string]: ComponentConfig }>({});
     const initialConfig = useMemo(() => parseConfig(props, mountedComponents, 'h 0.15 file-browser#default v 0.5 editor#default preview#default'), [])
     const layoutConfigRef = useRef<SplitPane | SimplePane>(initialConfig);
 
@@ -32,30 +32,27 @@ export default function Layout(props: PluginProps) {
         if (event.ctrlKey && event.button === 0) {
             if (!containerRect) return;
             const element = pickUp(layoutConfigRef, { ...containerRect, x: event.clientX, y: event.clientY });
-            console.log('picking up', element);
             if (!!element) {
                 setFloating(element);
                 event.preventDefault();
             }
         }
     }, [setFloating, containerRect]);
-    
+
     const onMouseUp = useCallback<MouseEventHandler>(event => {
         if (!containerRect || !floating) return;
         putDown(layoutConfigRef, { ...containerRect, x: event.clientX, y: event.clientY }, floating, false);
-        console.log('putting down', floating);
         setFloating(null);
         setDryRunOverlay(undefined);
     }, [floating, setFloating]);
 
-    console.log(mountedComponents)
     return (
         <div className='h-full w-full' onMouseDown={onMouseDown} onMouseUp={onMouseUp} onMouseMove={onMouseMove} ref={containerRef}>
             {createLayout(layoutConfigRef.current)}
-            {dryRunOverlay && <div className='absolute bg-c1-accent/50 border-8 border-transparent' style={dryRunOverlay}/>}
-            {Object.entries(mountedComponents).map(([k,{name, id, tabIndex, container}]) => {
+            {dryRunOverlay && <div className='absolute bg-c1-accent/50 border-8 border-transparent' style={dryRunOverlay} />}
+            {Object.entries(mountedComponents).map(([k, { name, id, tabIndex, container }]) => {
                 const Component = props.components.get(name) || (() => `Component ${name} not found`);
-                return <Component key={k} {...{...props, id, tabIndex, container}}/>;
+                return <Component key={k} {...{ ...props, id, tabIndex, ...container && { container: container } }} />;
             })}
         </div>
     );
@@ -77,7 +74,7 @@ function putDown(layoutConfigRef: RefObject<SplitPane | SimplePane | null>, args
     const { left, top, width, height } = args;
     if (!layoutConfigRef.current) {
         if (dryRun) {
-            return { left, top, width, height};
+            return { left, top, width, height };
         } else {
             layoutConfigRef.current = { a: element };
         }
@@ -95,7 +92,7 @@ function putDown(layoutConfigRef: RefObject<SplitPane | SimplePane | null>, args
 function _putDown(current: SplitPane | SimplePane, args: PaneHandlerArgs, element: ReactNode, dryRun: boolean) {
     const { left, top, width, height, x, y } = args;
     const rel = { x: (x - left) / width, y: (y - top) / height };
-    
+
     if ('direction' in current) {
         const [dir, notdir]: ('x' | 'y')[] = current.direction === 'horizontal' ? ['x', 'y'] : ['y', 'x'];
         if (Math.abs(current.ratio - rel[dir]) < 0.2 && (rel[notdir] < 0.1 || rel[notdir] > 0.9)) {
@@ -120,7 +117,7 @@ function _putDown(current: SplitPane | SimplePane, args: PaneHandlerArgs, elemen
                 args[total] *= current.ratio;
             } else {
                 side = 'b';
-                args[start] += args[total]*current.ratio;
+                args[start] += args[total] * current.ratio;
                 args[total] *= 1 - current.ratio;
             }
             const r: any = _putDown(current[side], args, element, dryRun);
@@ -132,9 +129,9 @@ function _putDown(current: SplitPane | SimplePane, args: PaneHandlerArgs, elemen
         }
     } else {
         const dist = { x: Math.abs(rel.x - 0.5), y: Math.abs(rel.y - 0.5) };
-    
-        const {dir, total, start}: {[index: string]: keyof PaneHandlerArgs} =
-            dist.x > dist.y ? {dir:'x', total: 'width', start: 'left'} : {dir:'y', total: 'height', start: 'top'};
+
+        const { dir, total, start }: { [index: string]: keyof PaneHandlerArgs } =
+            dist.x > dist.y ? { dir: 'x', total: 'width', start: 'left' } : { dir: 'y', total: 'height', start: 'top' };
         if (dryRun) {
             const r = { left, top, height, width };
             r[total] /= 2;
@@ -170,7 +167,7 @@ function pickUp(layoutConfigRef: RefObject<SplitPane | SimplePane | null>, args:
 function _pickUp(current: SplitPane, args: PaneHandlerArgs): SimplePane {
     const [dir, total, start]: (keyof PaneHandlerArgs)[] =
         current.direction === 'horizontal' ? ['x', 'width', 'left'] : ['y', 'height', 'top'];
-    
+
     const side = args[dir] <= args[start] + current.ratio * args[total] ? 'a' : 'b';
 
     if ('direction' in current[side]) {

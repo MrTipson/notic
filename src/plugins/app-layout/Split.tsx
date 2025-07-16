@@ -18,13 +18,13 @@ export function Split(props: SplitProps) {
     const type = config.direction;
 
     const [ratio, _setRatio] = useState(config.ratio);
-    const setRatio = useCallback<typeof _setRatio>((update) => 
+    const setRatio = useCallback<typeof _setRatio>((update) =>
         _setRatio(current => {
             const nextState = typeof update === 'function' ? update(current) : update
             config.ratio = nextState;
             return nextState;
         })
-    , [_setRatio])
+        , [_setRatio])
     const [drag, setDrag] = useState(false);
     const me = useRef<HTMLDivElement>(null);
 
@@ -51,10 +51,10 @@ export function Split(props: SplitProps) {
     const flex = type === 'horizontal' ? 'flex' : 'flex flex-col';
     return (
         <div ref={me} className={'w-full h-full ' + flex} onMouseMove={onMouseMove} onMouseUp={onMouseUp} onMouseLeave={onMouseUp}>
-            <div className='shrink-0 min-w-0 min-h-0' style={{ flexBasis: ratio*100 + '%' }}>{a}</div>
+            <div className='shrink-0 min-w-0 min-h-0' style={{ flexBasis: ratio * 100 + '%' }}>{a}</div>
             <div className='grow relative overflow-visible min-h-0'>
                 <div className={'h-full w-full relative ' + (type === 'vertical' ? 'overflow-auto' : '')}>{b}</div>
-                <Divider {...{drag, setDrag, type}} />
+                <Divider {...{ drag, setDrag, type }} />
             </div>
         </div>
     );
@@ -87,5 +87,5 @@ function Divider(props: DividerProps) {
     } else {
         className += ' from-25% to-75%';
     }
-    return <div {...{className, onMouseDown}}/>;
+    return <div {...{ className, onMouseDown }} />;
 }

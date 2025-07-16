@@ -7,7 +7,7 @@ function menuItem(text: string, id: string) {
         text, id,
         kind: 'MenuItem',
         action: invoke,
-        ...id in shortcuts && {accelerator: shortcuts[id as keyof typeof shortcuts].join('+')},
+        ...id in shortcuts && { accelerator: shortcuts[id as keyof typeof shortcuts].join('+') },
     };
 }
 function sep(): PredefinedMenuItemOptions {

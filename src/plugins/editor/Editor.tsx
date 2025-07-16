@@ -8,16 +8,20 @@ import { PluginProps, PluginWrapper } from '@/plugins';
 
 
 export type EditorState = {
-    filename: string | undefined,   setFilename: StateSetter<EditorState['filename']>,
-    unsaved: boolean,               setUnsaved: StateSetter<EditorState['unsaved']>,
-    content: string,                setContent: StateSetter<EditorState['content']>,
+    filename: string | undefined,
+    unsaved: boolean,
+    content: string,
+
+    setFilename: StateSetter<EditorState['filename']>,
+    setUnsaved: StateSetter<EditorState['unsaved']>,
+    setContent: StateSetter<EditorState['content']>,
 }
 export default function Editor(props: PluginProps) {
     const { registerAction, container } = props;
     const [filename, setFilename] = useState<string>();
     const [unsaved, setUnsaved] = useState(false);
     const [content, setContent] = useState('');
-    
+
     const editorState = wrap<EditorState>({
         filename, setFilename,
         unsaved, setUnsaved,
@@ -44,8 +48,8 @@ export default function Editor(props: PluginProps) {
         <PluginWrapper container={container}>
             <div className='w-full h-full focus:border-c3 focus-within:border-c1 border-transparent border outline-none bg-c2-fill text-c2 caret-c1 px-2 print:hidden'
                 tabIndex={props.tabIndex} onKeyDown={onKeyDown}>
-                    <textarea className='resize-none font-mono outline-none w-full h-full'
-                        onChange={onChange} value={content} tabIndex={-1}/>
+                <textarea className='resize-none font-mono outline-none w-full h-full'
+                    onChange={onChange} value={content} tabIndex={-1} />
             </div>
         </PluginWrapper>
     );
@@ -53,14 +57,13 @@ export default function Editor(props: PluginProps) {
 
 function onKeyDown(event: any) {
     const target = event.target;
-    if(target.tabIndex > 0) { // targeting parent and not textarea
+    if (target.tabIndex > 0) { // targeting parent and not textarea
         if (!event.shiftKey && !(event.key === 'Tab' && event.shiftKey)) {
-            console.log('correct element');
             target.querySelector('textarea').focus();
         }
-    } else if(event.key === 'Escape') { // pressing escape in textarea
+    } else if (event.key === 'Escape') { // pressing escape in textarea
         target.parentNode.focus();
-    } else if(event.key === 'Tab') { // pressing tab in textarea
+    } else if (event.key === 'Tab') { // pressing tab in textarea
         document.execCommand('insertText', undefined, '  '); // 2 spaces
         event.preventDefault();
     }
