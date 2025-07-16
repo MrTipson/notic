@@ -31,9 +31,11 @@ export function Split(props: SplitProps) {
     const onMouseMove: MouseEventHandler = useCallback(event => {
         if (drag && !!me.current) {
             if (type === 'horizontal') {
-                setRatio((event.clientX - me.current.clientLeft) / me.current.clientWidth);
+                const { x, width } = me.current.getBoundingClientRect();
+                setRatio((event.clientX - x) / width);
             } else {
-                setRatio((event.clientY - me.current.clientTop) / me.current.clientHeight);
+                const { y, height } = me.current.getBoundingClientRect();
+                setRatio((event.clientY - y) / height);
             }
             event.preventDefault();
         }
