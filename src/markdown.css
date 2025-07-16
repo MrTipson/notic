@@ -1,11 +1,12 @@
 @reference "./App.css";
+.md { @apply text-c2 }
 
 .md h1 { @apply text-c0 mx-4 mt-10 text-4xl font-extrabold border-b border-b-c3 }
 .md h2 { @apply text-c1 mx-4 mt-10 text-2xl font-bold border-b border-b-c3 w-fit }
 .md h3 { @apply text-c1 mx-4 mt-8 text-lg font-semibold underline underline-offset-2}
 .md h4, .md h5, .md h6 { @apply text-c1 mx-4 mt-3 font-semibold }
 
-.md p {	@apply mx-4 my-2 text-c2 }
+.md p {	@apply mx-4 my-2 }
 .md a {	@apply text-c2-accent underline underline-offset-4 }
 
 .md blockquote { @apply border-l-c2 border-l-2 px-2 py-1 bg-c2-fill/50 my-4 }
